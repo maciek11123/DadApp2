@@ -1,0 +1,3974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Dad App">
+<meta name="theme-color" content="#FFD600">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>DAD APP</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ── DEFAULT THEME (Yellow) ── */
+  :root {
+    --yellow: #FFD600;
+    --black: #000000;
+    --white: #FFFFFF;
+    --blue: #2F35E1;
+    --pink: #FF6B9D;
+    --grey: #E0E0E0;
+    --green: #00C853;
+    --shadow: 4px 4px 0px #000000;
+    --border: 3px solid #000000;
+    --font: 'Space Mono', 'Courier New', monospace;
+
+    /* Semantic theme tokens */
+    --bg:        var(--yellow);
+    --bg-card:   var(--white);
+    --text:      var(--black);
+    --text-dim:  rgba(0,0,0,0.45);
+    --text-muted:#555;
+    --accent:    var(--blue);
+    --nav-bg:    var(--black);
+    --nav-text:  #888;
+    --nav-active:var(--yellow);
+    --input-bg:  var(--white);
+
+    /* Font scale — changed by big-mode toggle */
+    --fs-xs:  9px;
+    --fs-sm:  11px;
+    --fs-md:  13px;
+    --fs-lg:  15px;
+    --fs-xl:  18px;
+    --fs-2xl: 20px;
+    --fs-3xl: 28px;
+    --fs-nav: 10px;
+  }
+
+  /* ── WARM PAPER THEME (Cream/Brown) ── */
+  [data-theme="warm"] {
+    --yellow: #FFF8E7;
+    --black:  #3E2723;
+    --white:  #FFFDF7;
+    --blue:   #E65100;
+    --grey:   #EFEBE9;
+    --green:  #558B2F;
+    --shadow: 4px 4px 0px #3E2723;
+    --border: 3px solid #3E2723;
+
+    --bg:        #FFF8E7;
+    --bg-card:   #FFFDF7;
+    --text:      #3E2723;
+    --text-dim:  rgba(62,39,35,0.5);
+    --text-muted:#795548;
+    --accent:    #E65100;
+    --nav-bg:    #3E2723;
+    --nav-text:  #A1887F;
+    --nav-active:#FFD54F;
+    --input-bg:  #FFFDF7;
+  }
+
+  [data-theme="bw"] {
+    --yellow: #FFFFFF;
+    --black:  #000000;
+    --white:  #FFFFFF;
+    --blue:   #000000;
+    --grey:   #E0E0E0;
+    --green:  #000000;
+    --shadow: 4px 4px 0px #000000;
+    --border: 3px solid #000000;
+
+    --bg:        #FFFFFF;
+    --bg-card:   #FFFFFF;
+    --text:      #000000;
+    --text-dim:  rgba(0,0,0,0.4);
+    --text-muted:#444444;
+    --accent:    #000000;
+    --nav-bg:    #000000;
+    --nav-text:  #888888;
+    --nav-active:#FFFFFF;
+    --input-bg:  #FFFFFF;
+  }
+
+  /* B&W theme: accent buttons go black/white instead of blue/pink */
+  [data-theme="bw"] .btn-blue  { background: #000; color: #fff; }
+  [data-theme="bw"] .btn-pink  { background: #333; color: #fff; }
+  [data-theme="bw"] .btn-green { background: #000; color: #fff; }
+  [data-theme="bw"] .ledger-summary { background: #000; color: #fff; }
+  [data-theme="bw"] .store-call-btn { background: #000; color: #fff; }
+  [data-theme="bw"] .store-hours-badge.open { background: #000; color: #fff; }
+  [data-theme="bw"] .store-hours-badge.closed { background: #e0e0e0; color: #000; }
+  [data-theme="bw"] .notes-tab.active { background: #000; color: #fff; }
+  [data-theme="bw"] .ledger-settle-btn { background: #000; color: #fff; }
+  [data-theme="bw"] .tts-read-all-btn { background: #000; color: #fff; }
+
+  /* ── BIG MODE overrides ── */
+  [data-big="1"] {
+    --fs-xs:  14px;
+    --fs-sm:  17px;
+    --fs-md:  20px;
+    --fs-lg:  24px;
+    --fs-xl:  28px;
+    --fs-2xl: 34px;
+    --fs-3xl: 44px;
+    --fs-nav: 13px;
+  }
+  [data-big="1"] .nav-icon { font-size: 30px !important; }
+  [data-big="1"] .nav-btn  { padding: 14px 4px 18px !important; min-height: 80px; gap: 6px; }
+  [data-big="1"] .list-item { min-height: 100px; }
+  [data-big="1"] .item-check-zone { min-height: 100px; width: 90px; }
+  [data-big="1"] .item-check { width: 36px; height: 36px; font-size: 20px; }
+  [data-big="1"] .item-label { font-size: 20px !important; letter-spacing: 0.04em; }
+  [data-big="1"] .btn { font-size: 17px !important; padding: 18px 20px !important; min-height: 64px; }
+  [data-big="1"] .note-item { padding: 18px 16px !important; }
+  [data-big="1"] .note-title { font-size: 18px !important; }
+  [data-big="1"] .store-name { font-size: 22px !important; }
+  [data-big="1"] .store-address { font-size: 13px !important; }
+  [data-big="1"] .store-icon-zone { font-size: 36px !important; width: 76px !important; }
+  [data-big="1"] .store-map-btn { width: 68px !important; font-size: 11px !important; }
+  [data-big="1"] .store-map-icon { font-size: 28px !important; }
+  [data-big="1"] .tts-read-all-btn { font-size: 17px !important; min-height: 64px !important; }
+  [data-big="1"] #pageHeader { font-size: 28px !important; letter-spacing: 0.08em; }
+  [data-big="1"] .title-input { font-size: 18px !important; padding: 16px !important; }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    font-family: var(--font);
+    overflow: hidden;
+  }
+
+  .app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    max-width: 480px;
+    margin: 0 auto;
+    background: var(--bg);
+    position: relative;
+  }
+
+  /* ── STATUS BAR ── */
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px 4px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--text);
+    background: var(--bg);
+  }
+  .status-right { display: flex; align-items: center; gap: 6px; }
+  .battery-badge {
+    background: #4CAF50;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border: 2px solid var(--black);
+    border-radius: 3px;
+  }
+
+  /* ── LANGUAGE SWITCHER (status bar right) ── */
+  .lang-switcher {
+    display: flex;
+    gap: 0;
+    border: 2px solid var(--text);
+    overflow: hidden;
+  }
+  .lang-btn {
+    padding: 3px 7px;
+    font-family: var(--font);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    background: none;
+    border: none;
+    border-right: 2px solid var(--black);
+    color: rgba(0,0,0,0.45);
+    transition: background 0.1s, color 0.1s;
+  }
+  .lang-btn:last-child { border-right: none; }
+  .lang-btn.active { background: var(--text); color: var(--bg); }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    padding: 8px 16px 12px;
+    font-size: var(--fs-lg);
+    color: var(--text);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* ── SCROLL AREA ── */
+  .scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 16px 100px;
+    scrollbar-width: none;
+  }
+  .scroll-area::-webkit-scrollbar { display: none; }
+
+  /* ── VIEWS ── */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ══════════════════════════════
+     SHARED CARD / BUTTON STYLES
+  ══════════════════════════════ */
+  .note-card {
+    background: var(--bg-card);
+    border: var(--border);
+    box-shadow: var(--shadow);
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .title-input {
+    flex: 1;
+    background: var(--input-bg);
+    border: var(--border);
+    padding: 10px 12px;
+    font-family: var(--font);
+    font-size: var(--fs-md);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    outline: none;
+    color: var(--text);
+  }
+  .title-input::placeholder { color: var(--text-dim); }
+  .title-input:focus { filter: brightness(0.97); }
+
+  .checkbox-icon {
+    width: 36px;
+    height: 36px;
+    border: var(--border);
+    background: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    font-size: 18px;
+    transition: background 0.1s;
+  }
+  .checkbox-icon:hover { background: var(--grey); }
+
+  .brain-dump {
+    width: 100%;
+    background: var(--input-bg);
+    border: var(--border);
+    padding: 12px;
+    font-family: var(--font);
+    font-size: var(--fs-sm);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    resize: none;
+    min-height: 100px;
+    outline: none;
+    color: var(--text);
+  }
+  .brain-dump::placeholder { color: var(--text-dim); }
+  .brain-dump:focus { filter: brightness(0.97); }
+
+  .card-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 14px 10px;
+    border: var(--border);
+    font-family: var(--font);
+    font-size: var(--fs-md);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform 0.08s, box-shadow 0.08s;
+    box-shadow: var(--shadow);
+    color: var(--white);
+  }
+  .btn:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0px var(--black); }
+  .btn-blue { background: var(--blue); }
+  .btn-pink { background: var(--pink); }
+  .btn-grey { background: var(--grey); color: var(--black); }
+  .btn-green { background: var(--green); color: var(--black); }
+
+  /* Saved notes list */
+  .notes-list { margin-top: 4px; }
+  .note-item {
+    background: var(--bg-card);
+    border: var(--border);
+    box-shadow: var(--shadow);
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    cursor: pointer;
+  }
+  .note-item:hover { background: var(--bg-card); }
+  .note-item:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--black); }
+  .note-item-title { font-size: var(--fs-md); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; color: var(--text); }
+  .note-item-preview { font-size: var(--fs-sm); color: var(--text-muted); letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .note-item-meta { font-size: var(--fs-xs); color: var(--text-muted); margin-top: 6px; letter-spacing: 0.05em; }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    line-height: 1.9;
+  }
+
+
+  .aisle-label {
+    margin-top: 16px;
+    margin-bottom: 6px;
+    font-size: var(--fs-xs);
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 4px;
+  }
+  .aisle-label:first-child { margin-top: 0; }
+
+  .extracted-aisle-label {
+    font-family: var(--font);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-top: 10px;
+    margin-bottom: 2px;
+  }
+
+  /* ══════════════════════════════
+     PHASE 4 — GIANT ACCESSIBLE TODAY LIST
+  ══════════════════════════════ */
+  .list-section-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    padding-left: 2px;
+    color: var(--text-muted);
+  }
+
+  /* Giant accessible list items — Phase 4 */
+  .list-item {
+    background: var(--bg-card);
+    border: var(--border);
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: transform 0.08s, box-shadow 0.08s;
+    min-height: 76px;           /* PHASE 4: giant tap targets */
+  }
+  .list-item:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--black); }
+  .list-item.checked { background: var(--grey); border-style: dashed; }
+  .list-item.checked .item-label { text-decoration: line-through; color: var(--text-dim); }
+
+  /* PHASE 4: Big fat check zone on the left */
+  .item-check-zone {
+    width: 72px;
+    min-height: 76px;
+    border-right: var(--border);
+    background: var(--bg-card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: var(--fs-3xl);
+    font-weight: 700;
+    transition: background 0.1s;
+  }
+  .list-item.checked .item-check-zone { background: var(--blue); color: white; }
+
+  .item-content {
+    flex: 1;
+    padding: 18px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .item-label {
+    font-size: 16px;            /* PHASE 4: bigger text */
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 1.3;
+    flex: 1;
+  }
+
+  /* PHASE 4: TTS speak button on each item */
+  .item-tts-btn {
+    width: 44px;
+    height: 44px;
+    border: 2px solid var(--black);
+    background: var(--yellow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.1s, transform 0.08s;
+    box-shadow: 2px 2px 0 var(--black);
+  }
+  .item-tts-btn:active { transform: translate(1px,1px); box-shadow: 1px 1px 0 var(--black); }
+  .item-tts-btn:hover { background: var(--bg-card); }
+
+  /* Completed section divider */
+  .done-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 18px 0 12px;
+  }
+  .done-divider-line {
+    flex: 1;
+    height: 2px;
+    background: rgba(0,0,0,0.2);
+  }
+  .done-divider-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(0,0,0,0.4);
+    white-space: nowrap;
+  }
+
+  /* PHASE 4: Global read-aloud button */
+  .tts-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .tts-read-all-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border: var(--border);
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    background: var(--black);
+    color: var(--yellow);
+    transition: transform 0.08s, box-shadow 0.08s;
+    flex: 1;
+  }
+  .tts-read-all-btn:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--black); }
+  .tts-read-all-btn.speaking { background: var(--pink); color: var(--black); }
+
+  .tts-stop-btn {
+    padding: 12px 14px;
+    border: var(--border);
+    font-family: var(--font);
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    background: var(--grey);
+    color: var(--black);
+    transition: transform 0.08s, box-shadow 0.08s;
+  }
+  .tts-stop-btn:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--black); }
+
+  /* ══════════════════════════════
+     MONTH / BILLS VIEW
+  ══════════════════════════════ */
+  .bill-item {
+    background: var(--bg-card);
+    border: var(--border);
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: transform 0.08s, box-shadow 0.08s;
+  }
+  .bill-item:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 var(--black); }
+  .bill-item.checked { background: var(--grey); border-style: dashed; }
+  .bill-item.checked .bill-name { text-decoration: line-through; color: var(--text-dim); }
+  .bill-check {
+    width: 28px; height: 28px;
+    border: var(--border);
+    background: var(--bg-card);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: var(--fs-xl);
+  }
+  .bill-item.checked .bill-check { background: var(--blue); color: white; }
+  .bill-info { flex: 1; }
+  .bill-name { font-size: var(--fs-md); font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; display: block; }
+  .bill-cycle { font-size: var(--fs-xs); color: var(--text-muted); letter-spacing: 0.06em; text-transform: uppercase; display: block; margin-top: 2px; }
+  .bill-amount { font-size: 14px; font-weight: 700; letter-spacing: 0.04em; flex-shrink: 0; }
+
+  /* ══════════════════════════════
+     HISTORY VIEW
+  ══════════════════════════════ */
+  .history-item {
+    background: var(--white);
+    border: var(--border);
+    box-shadow: var(--shadow);
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .history-item-header { display: flex; justify-content: space-between; align-items: flex-start; }
+  .history-title { font-size: var(--fs-md); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text); }
+  .history-date { font-size: var(--fs-xs); color: var(--text-muted); letter-spacing: 0.05em; }
+  .history-preview { margin-top: 6px; font-size: var(--fs-sm); color: var(--text-muted); letter-spacing: 0.04em; text-transform: uppercase; line-height: 1.5; }
+
+  /* ══════════════════════════════
+     BOTTOM NAV
+  ══════════════════════════════ */
+  .bottom-nav {
+    display: flex;
+    background: var(--nav-bg);
+    border-top: var(--border);
+    padding: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    z-index: 100;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .bottom-nav::-webkit-scrollbar { display: none; }
+  .nav-btn {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 2px 12px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: var(--nav-text);
+    font-family: var(--font);
+    font-size: var(--fs-nav);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    gap: 4px;
+    transition: background 0.1s;
+    border-right: 2px solid rgba(255,255,255,0.12);
+    white-space: nowrap;
+  }
+  .nav-btn:last-child { border-right: none; }
+  .nav-btn:hover { background: rgba(255,255,255,0.08); }
+  .nav-btn.active { color: var(--nav-active); }
+  .nav-icon { font-size: 24px; line-height: 1; }
+  /* Nav label — hidden by default, show only if enough room */
+  .nav-label {
+    font-size: 9px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    line-height: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    display: none; /* hidden; icon + title tooltip is enough */
+  }
+
+  /* ── NOTES ARCHIVE TABS ── */
+  .notes-tab-bar {
+    display: flex;
+    border: var(--border);
+    box-shadow: 3px 3px 0 var(--black);
+    margin-bottom: 14px;
+    background: var(--bg);
+  }
+  .notes-tab {
+    flex: 1;
+    padding: 12px 8px;
+    border: none;
+    background: none;
+    font-family: var(--font);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .notes-tab:first-child { border-right: var(--border); }
+  .notes-tab.active { background: var(--text); color: var(--bg); }
+  .notes-tab:not(.active):hover { background: var(--grey); }
+
+  /* Permanent delete btn in archive */
+  .note-perm-delete {
+    background: none;
+    border: none;
+    font-size: 15px;
+    cursor: pointer;
+    color: var(--text-dim);
+    padding: 0 0 0 4px;
+    flex-shrink: 0;
+    transition: color 0.1s;
+  }
+  .note-perm-delete:hover { color: #c0392b; }
+  .note-archive-btn {
+    background: none;
+    border: none;
+    font-size: 15px;
+    cursor: pointer;
+    color: var(--text-dim);
+    padding: 0 0 0 4px;
+    flex-shrink: 0;
+  }
+  .note-archive-btn:hover { color: var(--accent); }
+  .note-restore-btn {
+    font-family: var(--font);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 4px 8px;
+    border: var(--border);
+    background: var(--bg);
+    cursor: pointer;
+    color: var(--text);
+    margin-top: 6px;
+    display: inline-block;
+  }
+
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--bg-card);
+    border: var(--border);
+    box-shadow: 8px 8px 0px var(--black);
+    padding: 28px 24px;
+    width: calc(100% - 48px);
+    max-width: 400px;
+    text-align: center;
+  }
+  .modal-title { font-size: 16px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 20px; }
+  .rec-button {
+    width: 100px; height: 100px;
+    background: var(--pink);
+    border: var(--border);
+    box-shadow: var(--shadow);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    cursor: pointer;
+    font-size: 36px;
+    transition: transform 0.08s, box-shadow 0.08s;
+  }
+  .rec-button:active { transform: translate(3px,3px); box-shadow: 1px 1px 0 var(--black); }
+  .rec-button.recording { background: #FF2020; animation: pulse 1s infinite; }
+  @keyframes pulse {
+    0%, 100% { box-shadow: var(--shadow); }
+    50% { box-shadow: 6px 6px 0px var(--black), 0 0 0 8px rgba(255,32,32,0.2); }
+  }
+  .rec-status { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 20px; min-height: 18px; }
+  .modal-actions { display: flex; gap: 10px; }
+
+  /* ══════════════════════════════
+     GEMINI THINKING STATE
+  ══════════════════════════════ */
+  .gemini-thinking { display: none; flex-direction: column; align-items: center; gap: 12px; padding: 8px 0 4px; }
+  .gemini-thinking.visible { display: flex; }
+  .thinking-spinner {
+    width: 40px; height: 40px;
+    border: 4px solid var(--grey);
+    border-top-color: var(--blue);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .thinking-label { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); }
+
+  /* ══════════════════════════════
+     TRANSCRIPTION PANEL
+  ══════════════════════════════ */
+  .transcription-panel {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--yellow);
+    z-index: 150;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .transcription-panel.open { display: flex; }
+  .tp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px 10px;
+    border-bottom: var(--border);
+    background: var(--yellow);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .tp-title { font-size: 14px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+  .lang-badge {
+    padding: 4px 10px;
+    border: var(--border);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    box-shadow: 2px 2px 0 var(--black);
+  }
+  .lang-badge.pl { background: #E8F5E9; }
+  .lang-badge.fr { background: #E3F2FD; }
+  .lang-badge.en { background: #FFF3E0; }
+  .lang-badge.unknown { background: var(--grey); }
+  .tp-body { padding: 16px; flex: 1; display: flex; flex-direction: column; gap: 14px; }
+  .tp-section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
+  .tp-card { background: var(--white); border: var(--border); box-shadow: var(--shadow); padding: 14px 16px; }
+  .tp-transcription-text { font-size: 14px; line-height: 1.7; letter-spacing: 0.02em; white-space: pre-wrap; word-break: break-word; }
+  .tp-followup-text { font-size: 13px; line-height: 1.6; font-weight: 700; letter-spacing: 0.04em; }
+  .confirm-row { display: flex; gap: 12px; margin-top: 4px; }
+  .btn-confirm-yes {
+    flex: 1;
+    padding: 16px 10px;
+    border: var(--border);
+    font-family: var(--font);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    background: var(--blue);
+    color: var(--white);
+    transition: transform 0.08s, box-shadow 0.08s;
+  }
+  .btn-confirm-yes:active { transform: translate(3px,3px); box-shadow: 1px 1px 0 var(--black); }
+  .btn-confirm-no {
+    flex: 1;
+    padding: 16px 10px;
+    border: var(--border);
+    font-family: var(--font);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    background: var(--grey);
+    color: var(--black);
+    transition: transform 0.08s, box-shadow 0.08s;
+  }
+  .btn-confirm-no:active { transform: translate(3px,3px); box-shadow: 1px 1px 0 var(--black); }
+  .extracted-list { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+  .extracted-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--white);
+    border: var(--border);
+    box-shadow: 3px 3px 0 var(--black);
+    padding: 12px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .extracted-item::before { content: '+'; font-size: 18px; font-weight: 700; color: var(--blue); }
+  .tp-actions {
+    display: flex;
+    gap: 10px;
+    padding: 16px;
+    border-top: var(--border);
+    background: var(--yellow);
+    position: sticky;
+    bottom: 0;
+  }
+
+  /* ══════════════════════════════
+     PHASE 5 — STORES TAB
+  ══════════════════════════════ */
+
+  /* Locate button bar */
+  .stores-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+    align-items: stretch;
+  }
+  .stores-locate-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border: var(--border);
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    background: var(--black);
+    color: var(--yellow);
+    transition: transform 0.08s, box-shadow 0.08s;
+  }
+  .stores-locate-btn:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--black); }
+  .stores-locate-btn.locating { background: var(--blue); }
+  .stores-locate-btn.located  { background: var(--green); color: var(--black); }
+
+  /* Store card */
+  .store-card {
+    background: var(--white);
+    border: var(--border);
+    box-shadow: var(--shadow);
+    margin-bottom: 14px;
+    overflow: hidden;
+    position: relative;
+  }
+  .store-card.detected {
+    border-color: var(--blue);
+    box-shadow: 4px 4px 0 var(--blue);
+  }
+
+  /* "MENTIONED IN LAST NOTE" ribbon */
+  .store-detected-ribbon {
+    display: none;
+    background: var(--blue);
+    color: var(--white);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    text-align: center;
+  }
+  .store-card.detected .store-detected-ribbon { display: block; }
+
+  .store-card-body {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    min-height: 72px;
+  }
+
+  /* Emoji icon zone */
+  .store-icon-zone {
+    width: 64px;
+    min-height: 72px;
+    border-right: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+    background: var(--yellow);
+  }
+
+  .store-info {
+    flex: 1;
+    padding: 12px 14px;
+  }
+
+  .store-name {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .store-address {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+
+  .store-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  /* Distance badge */
+  .store-distance-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border: 2px solid var(--black);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    background: var(--yellow);
+    box-shadow: 2px 2px 0 var(--black);
+  }
+  .store-distance-badge.nearest { background: var(--green); }
+
+  /* Hours badge */
+  .store-hours-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border: 2px solid var(--black);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    box-shadow: 2px 2px 0 var(--black);
+  }
+  .store-hours-badge.open   { background: var(--green); color: var(--white); }
+  .store-hours-badge.closed { background: var(--grey); }
+  .store-hours-badge.loading { background: var(--grey); }
+
+  /* Map link button */
+  .store-map-btn {
+    width: 56px;
+    min-height: 72px;
+    border-left: var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: var(--yellow);
+    cursor: pointer;
+    text-decoration: none;
+    flex-shrink: 0;
+    font-family: var(--font);
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--black);
+    transition: background 0.1s;
+  }
+  .store-map-btn:hover { background: var(--bg-card); }
+  .store-map-btn:active { background: var(--grey); }
+  .store-map-icon { font-size: 22px; }
+  .store-call-btn { background: var(--green); color: var(--white); }
+  .store-call-btn:hover { opacity: 0.85; }
+
+  /* Actions column (map + waze stacked) */
+  .store-actions {
+    display: flex;
+    flex-direction: column;
+    border-left: var(--border);
+    flex-shrink: 0;
+  }
+
+  /* Expand branches row */
+  .store-expand-row {
+    border-top: var(--border);
+  }
+  .store-expand-btn {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--bg);
+    border: none;
+    font-family: var(--font);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--black);
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.1s;
+  }
+  .store-expand-btn:hover { background: var(--yellow); }
+  .store-expand-btn:active { background: var(--grey); }
+
+  /* Stores empty state */
+  .stores-empty {
+    text-align: center;
+    padding: 40px 20px;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(0,0,0,0.4);
+    line-height: 2;
+  }
+
+
+  /* Theme picker buttons */
+  .settings-row-theme {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .settings-theme-btns {
+    display: flex;
+    gap: 8px;
+  }
+  .settings-theme-btn {
+    width: 52px;
+    height: 52px;
+    font-size: 22px;
+    border: 3px solid var(--black);
+    background: var(--bg-card);
+    box-shadow: 3px 3px 0px var(--black);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .settings-theme-btn.active {
+    box-shadow: none;
+    transform: translate(3px, 3px);
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ══════════════════════════════
+     PHASE 6 — SETTINGS TAB
+  ══════════════════════════════ */
+
+  /* Card container */
+  .settings-card {
+    background: var(--bg-card);
+    border: var(--border);
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+
+  /* Each row */
+  .settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 18px;
+    min-height: 76px;
+  }
+  .settings-row-lang {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding-bottom: 22px;
+  }
+  .settings-row-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .settings-row-icon { font-size: 18px; }
+
+  .settings-divider {
+    height: 3px;
+    background: var(--black);
+  }
+
+  /* ── Neubrutalist toggle switch ── */
+  .nb-toggle {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    flex-shrink: 0;
+  }
+  .nb-toggle input { display: none; }
+  .nb-toggle-track {
+    position: relative;
+    width: 62px;
+    height: 34px;
+    background: var(--grey);
+    border: 3px solid var(--black);
+    box-shadow: 3px 3px 0px var(--black);
+    display: flex;
+    align-items: center;
+    transition: background 0.15s;
+  }
+  .nb-toggle input:checked + .nb-toggle-track {
+    background: var(--blue);
+  }
+  .nb-toggle-thumb {
+    position: absolute;
+    left: 3px;
+    width: 22px;
+    height: 22px;
+    background: var(--black);
+    transition: left 0.15s;
+  }
+  .nb-toggle input:checked + .nb-toggle-track .nb-toggle-thumb {
+    left: 31px;
+    background: var(--yellow);
+  }
+
+  /* ── Language block buttons ── */
+  .settings-lang-btns {
+    display: flex;
+    gap: 0;
+    width: 100%;
+  }
+  .settings-lang-btn {
+    flex: 1;
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 16px 4px;
+    border: 3px solid var(--black);
+    border-right: none;
+    background: var(--white);
+    color: var(--black);
+    cursor: pointer;
+    text-align: center;
+    box-shadow: 3px 3px 0px var(--black);
+    transition: background 0.1s, color 0.1s, box-shadow 0.1s, transform 0.1s;
+  }
+  .settings-lang-btn:last-child { border-right: 3px solid var(--black); }
+  .settings-lang-btn.active {
+    background: var(--black);
+    color: var(--yellow);
+    box-shadow: none;
+    transform: translate(3px, 3px);
+  }
+
+  /* About block */
+  .settings-about {
+    padding: 18px;
+    text-align: center;
+  }
+  .settings-about-title {
+    font-family: var(--font);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--black);
+  }
+  .settings-about-sub {
+    font-family: var(--font);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: rgba(0,0,0,0.4);
+    margin-top: 4px;
+    text-transform: uppercase;
+  }
+
+  /* ══════════════════════════════
+     TOAST
+  ══════════════════════════════ */
+  .toast {
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--black);
+    color: var(--yellow);
+    padding: 10px 20px;
+    font-family: var(--font);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 2px solid var(--yellow);
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    z-index: 200;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ══════════════════════════════
+     PHASE 8 — FIREBASE VIEWS
+  ══════════════════════════════ */
+
+  .firebase-status-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+  .fb-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #888;
+    flex-shrink: 0;
+    transition: background 0.3s;
+  }
+  .fb-dot.live    { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .fb-dot.offline { background: #e53935; }
+
+  /* Bring list items */
+  .bring-item {
+    background: var(--bg-card);
+    border: var(--border);
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    min-height: 72px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: transform 0.08s, box-shadow 0.08s;
+  }
+  .bring-item:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 var(--black); }
+  .bring-item.packed { background: var(--grey); border-style: dashed; opacity: 0.7; }
+  .bring-check-zone {
+    width: 66px;
+    min-height: 72px;
+    border-right: var(--border);
+    background: var(--bg-card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: var(--fs-2xl);
+    transition: background 0.1s;
+  }
+  .bring-item.packed .bring-check-zone { background: var(--green); color: white; }
+  .bring-item-text {
+    flex: 1;
+    padding: 0 14px;
+    font-size: var(--fs-xl);
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: var(--text);
+  }
+  .bring-item.packed .bring-item-text { text-decoration: line-through; color: var(--text-muted); }
+  .bring-delete {
+    width: 44px;
+    min-height: 72px;
+    border-left: var(--border);
+    background: none;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+  .bring-delete:active { background: #e53935; color: white; }
+
+  /* Ledger */
+  .ledger-summary {
+    background: var(--black);
+    color: var(--bg);
+    border: var(--border);
+    box-shadow: var(--shadow);
+    padding: 18px 20px;
+    font-size: var(--fs-xl);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-align: center;
+    margin-bottom: 14px;
+  }
+  .ledger-item {
+    background: var(--bg-card);
+    border: var(--border);
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .ledger-item.settled { opacity: 0.5; border-style: dashed; }
+  .ledger-item-info { flex: 1; }
+  .ledger-item-desc {
+    font-size: var(--fs-md);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text);
+    display: block;
+  }
+  .ledger-item-meta {
+    font-size: var(--fs-xs);
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    margin-top: 3px;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ledger-item-amount {
+    font-size: var(--fs-lg);
+    font-weight: 700;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+  .ledger-settle-btn {
+    padding: 8px 12px;
+    border: var(--border);
+    background: var(--accent);
+    color: white;
+    font-family: var(--font);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    box-shadow: 2px 2px 0 var(--black);
+    flex-shrink: 0;
+  }
+  .ledger-settle-btn:active { transform: translate(2px,2px); box-shadow: none; }
+
+  /* Live dot on nav */
+  .nav-live-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    position: absolute;
+    top: 8px; right: 6px;
+    box-shadow: 0 0 5px var(--green);
+  }
+  .nav-btn { position: relative; }
+
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <span id="clockDisplay">22:20</span>
+    <div class="status-right">
+    </div>
+  </div>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header" id="pageHeader">DAD APP</div>
+
+  <!-- SCROLL AREA -->
+  <div class="scroll-area">
+
+    <!-- ── NOTES VIEW ── -->
+    <div class="view active" id="view-notes">
+      <div class="note-card">
+        <div class="card-header">
+          <input class="title-input" id="titleInput" type="text" maxlength="60">
+          <div class="checkbox-icon" id="noteToggle" title="Mark complete">☐</div>
+        </div>
+        <textarea class="brain-dump" id="brainDump" rows="5"></textarea>
+        <div class="card-actions">
+          <button class="btn btn-blue" id="btnSaveNote" onclick="saveNote()"></button>
+          <button class="btn btn-pink" id="btnRecAudio" onclick="openRecorder()"></button>
+          <button class="btn" style="background:var(--black);color:var(--bg);flex-shrink:0;padding:0 14px;font-size:11px;" onclick="cubeImport()" title="Import from CubeACR">📂 CUBE</button>
+        </div>
+      </div>
+
+      <!-- Archive toggle -->
+      <div class="notes-tab-bar">
+        <button class="notes-tab active" id="notesTabActive" onclick="setNotesTab('active')">📝 <span data-i18n="notes_tab_active"></span></button>
+        <button class="notes-tab" id="notesTabArchive" onclick="setNotesTab('archive')">🗂️ <span data-i18n="notes_tab_archive"></span></button>
+      </div>
+
+      <div class="notes-list" id="notesList"></div>
+    </div>
+
+    <!-- ── TODAY VIEW ── -->
+    <div class="view" id="view-today">
+      <!-- PHASE 4: TTS control bar -->
+      <div class="tts-bar">
+        <button class="tts-read-all-btn" id="ttsReadAllBtn" onclick="ttsReadAll()">
+          <span>🔊</span><span id="ttsReadAllLabel"></span>
+        </button>
+        <button class="tts-stop-btn" onclick="ttsStop()" title="Stop">⏹</button>
+      </div>
+
+      <div id="todayList"></div>
+
+      <div class="note-card" style="margin-top:16px;">
+        <input class="title-input" id="todayInput" type="text" maxlength="80" style="width:100%; margin-bottom:10px;">
+        <button class="btn btn-blue" id="btnAddItem" style="width:100%;" onclick="addTodayItem()"></button>
+      </div>
+    </div>
+
+    <!-- ── MONTH VIEW ── -->
+    <div class="view" id="view-month">
+      <div class="list-section-label" id="labelThisCycle"></div>
+      <div id="billsList"></div>
+      <div class="list-section-label" id="labelNextCycle" style="margin-top:16px;"></div>
+      <div id="nextBillsList"></div>
+    </div>
+
+    <!-- ── BILLS VIEW ── -->
+    <div class="view" id="view-bills">
+      <div class="list-section-label" id="labelAddBill"></div>
+      <div class="note-card">
+        <input class="title-input" id="billNameInput" type="text" maxlength="60" style="width:100%; margin-bottom:10px;">
+        <div style="display:flex; gap:10px; margin-bottom:10px;">
+          <input class="title-input" id="billAmountInput" type="number" placeholder="$0.00" style="flex:1;">
+          <input class="title-input" id="billDateInput" type="text" style="flex:1;">
+        </div>
+        <button class="btn btn-blue" id="btnAddBill" style="width:100%;" onclick="addBill()"></button>
+      </div>
+    </div>
+
+    <!-- ── HISTORY VIEW ── -->
+    <div class="view" id="view-history">
+      <div class="list-section-label" id="labelAllNotes"></div>
+      <div id="historyList"></div>
+    </div>
+
+    <!-- ── PHASE 6: SETTINGS VIEW ── -->
+    <div class="view" id="view-settings">
+      <div class="settings-card">
+
+        <!-- TOGGLE ROW: Show Pop-up After Calls -->
+        <div class="settings-row">
+          <div class="settings-row-label">
+            <span class="settings-row-icon">📞</span>
+            <span data-i18n="settings_popup_label"></span>
+          </div>
+          <label class="nb-toggle" title="Show pop-up after calls">
+            <input type="checkbox" id="settingCallPopup" onchange="onSettingToggleChange(this)">
+            <span class="nb-toggle-track">
+              <span class="nb-toggle-thumb"></span>
+            </span>
+          </label>
+        </div>
+
+        <div class="settings-divider"></div>
+
+        <!-- LANGUAGE ROW -->
+        <div class="settings-row settings-row-lang">
+          <div class="settings-row-label">
+            <span class="settings-row-icon">🌐</span>
+            <span data-i18n="settings_lang_label"></span>
+          </div>
+          <div class="settings-lang-btns">
+            <button class="settings-lang-btn" id="sLangEn" onclick="onSettingLang('en')">🇨🇦 EN</button>
+            <button class="settings-lang-btn" id="sLangFr" onclick="onSettingLang('fr')">🇨🇦 FR</button>
+            <button class="settings-lang-btn" id="sLangPl" onclick="onSettingLang('pl')">🇵🇱 PL</button>
+          </div>
+        </div>
+
+        <div class="settings-divider"></div>
+
+        <!-- THEME ROW -->
+        <div class="settings-row settings-row-theme">
+          <div class="settings-row-label">
+            <span class="settings-row-icon">🎨</span>
+            <span data-i18n="settings_theme_label"></span>
+          </div>
+          <div class="settings-theme-btns">
+            <button class="settings-theme-btn" id="themeDefault" onclick="onSettingTheme('default')" title="Yellow">☀️</button>
+            <button class="settings-theme-btn" id="themeWarm"    onclick="onSettingTheme('warm')"    title="Warm Paper">📜</button>
+            <button class="settings-theme-btn" id="themeBw"      onclick="onSettingTheme('bw')"      title="Black &amp; White" style="font-size:14px;font-weight:900;letter-spacing:-1px;">B&amp;W</button>
+          </div>
+        </div>
+
+        <div class="settings-divider"></div>
+
+        <!-- BIG MODE ROW -->
+        <div class="settings-row">
+          <div class="settings-row-label">
+            <span class="settings-row-icon">🔠</span>
+            <span data-i18n="settings_bigmode_label"></span>
+          </div>
+          <label class="nb-toggle" title="Big mode">
+            <input type="checkbox" id="settingBigMode" onchange="onSettingBigMode(this)">
+            <span class="nb-toggle-track">
+              <span class="nb-toggle-thumb"></span>
+            </span>
+          </label>
+        </div>
+
+      </div><!-- /settings-card -->
+
+      <!-- INSTALL BUTTON -->
+      <button id="pwaInstallBtn" onclick="pwaInstall()" style="display:none;width:100%;padding:18px;background:var(--black);color:var(--bg);border:var(--border);font-family:var(--font);font-size:var(--fs-md);font-weight:700;letter-spacing:0.08em;cursor:pointer;margin-bottom:16px;align-items:center;justify-content:center;gap:10px;">
+        📲 <span data-i18n="btn_install"></span>
+      </button>
+
+      <!-- ABOUT BLOCK -->
+      <div class="settings-about">
+        <div class="settings-about-title">DAD APP</div>
+        <div class="settings-about-sub" data-i18n="settings_about_sub"></div>
+      </div>
+    </div>
+
+    <!-- ── PHASE 8: BRING LIST VIEW ── -->
+    <div class="view" id="view-bring">
+      <div class="firebase-status-bar">
+        <span class="fb-dot" id="bringFbDot"></span>
+        <span id="bringFbStatus" data-i18n="fb_connecting"></span>
+      </div>
+      <div id="bringList"></div>
+      <div class="note-card" style="margin-top:16px;">
+        <input class="title-input" id="bringInput" type="text" maxlength="80" style="width:100%;margin-bottom:10px;" data-i18n-placeholder="bring_input_placeholder">
+        <button class="btn btn-blue" style="width:100%;" onclick="bringAdd()" data-i18n-btn="btn_bring_add"></button>
+      </div>
+    </div>
+
+    <!-- ── PHASE 8: LEDGER VIEW ── -->
+    <div class="view" id="view-ledger">
+      <div class="firebase-status-bar">
+        <span class="fb-dot" id="ledgerFbDot"></span>
+        <span id="ledgerFbStatus" data-i18n="fb_connecting"></span>
+      </div>
+      <div class="ledger-summary" id="ledgerSummary"></div>
+      <div id="ledgerList"></div>
+      <div class="note-card" style="margin-top:16px;">
+        <input class="title-input" id="ledgerDesc"   type="text"   maxlength="60" style="width:100%;margin-bottom:10px;" data-i18n-placeholder="ledger_desc_placeholder">
+        <div style="display:flex;gap:10px;margin-bottom:10px;">
+          <input class="title-input" id="ledgerAmount" type="number" placeholder="$0.00" step="0.01" style="flex:1;">
+          <select class="title-input" id="ledgerPaidBy" style="flex:1;cursor:pointer;">
+              <option value="me" data-i18n-opt="ledger_paid_by_me"></option>
+              <option value="him" data-i18n-opt="ledger_paid_by_him"></option>
+            </select>
+        </div>
+        <button class="btn btn-blue" style="width:100%;" onclick="ledgerAdd()" data-i18n-btn="btn_ledger_add"></button>
+      </div>
+    </div>
+
+    <!-- ── PHASE 5: STORES VIEW ── -->
+    <div class="view" id="view-stores">
+      <div class="stores-bar">
+        <button class="stores-locate-btn" id="storesLocateBtn" onclick="locateMe()">
+          <span>📍</span><span id="storesLocateLabel"></span>
+        </button>
+        <button class="stores-locate-btn" style="margin-left:8px;" onclick="showAddStoreModal()">
+          ➕ <span data-i18n="stores_add_store"></span>
+        </button>
+      </div>
+      <div id="storesList"></div>
+    </div>
+
+    <!-- ADD STORE MODAL -->
+    <div class="modal-overlay" id="addStoreModal">
+      <div class="modal">
+        <div class="modal-title" data-i18n="stores_add_store"></div>
+        <input class="title-input" id="addStoreName" type="text" maxlength="60" style="width:100%;margin-bottom:10px;" placeholder="Store name...">
+        <input class="title-input" id="addStoreAddr" type="text" maxlength="100" style="width:100%;margin-bottom:16px;" placeholder="Address (optional)...">
+        <div class="modal-actions">
+          <button class="btn" style="flex:1;" onclick="closeAddStoreModal()">✕ CANCEL</button>
+          <button class="btn btn-blue" style="flex:2;" onclick="confirmAddStore()">✓ ADD</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /scroll-area -->
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-view="notes" onclick="switchView('notes', this)" title="Notes">
+      <span class="nav-icon">✏️</span>
+      <span class="nav-label" data-i18n="nav_notes"></span>
+    </button>
+    <button class="nav-btn" data-view="today" onclick="switchView('today', this)" title="Today">
+      <span class="nav-icon">◉</span>
+      <span class="nav-label" data-i18n="nav_today"></span>
+    </button>
+    <button class="nav-btn" data-view="bring" onclick="switchView('bring', this)" title="Bring">
+      <span class="nav-icon">📦</span>
+      <span class="nav-label" data-i18n="nav_bring"></span>
+      <span class="nav-live-dot" id="bringDot" style="display:none"></span>
+    </button>
+    <button class="nav-btn" data-view="ledger" onclick="switchView('ledger', this)" title="Ledger">
+      <span class="nav-icon">💳</span>
+      <span class="nav-label" data-i18n="nav_ledger"></span>
+    </button>
+    <button class="nav-btn" data-view="stores" onclick="switchView('stores', this)" title="Stores">
+      <span class="nav-icon">🛒</span>
+      <span class="nav-label" data-i18n="nav_stores"></span>
+    </button>
+    <button class="nav-btn" data-view="settings" onclick="switchView('settings', this)" title="Settings">
+      <span class="nav-icon">⚙️</span>
+      <span class="nav-label" data-i18n="nav_settings"></span>
+    </button>
+  </nav>
+
+</div><!-- /app -->
+
+<!-- RECORDING MODAL -->
+<div class="modal-overlay" id="recModal">
+  <div class="modal">
+    <div class="modal-title" id="recModalTitle">🎙 <span data-i18n="rec_title"></span></div>
+    <div id="recUI">
+      <div class="rec-button" id="recButton" onclick="toggleRecording()">🎙</div>
+      <div class="rec-status" id="recStatus"></div>
+      <div class="modal-actions">
+        <button class="btn btn-grey" style="flex:1;" onclick="closeRecorder()" id="btnCancel"></button>
+        <button class="btn btn-blue" style="flex:1;" id="saveRecBtn" onclick="sendToGemini()" disabled id="btnTranscribe"></button>
+      </div>
+    </div>
+    <div class="gemini-thinking" id="geminiThinking">
+      <div class="thinking-spinner"></div>
+      <div class="thinking-label" id="thinkingLabel"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TRANSCRIPTION RESULT PANEL -->
+<div class="transcription-panel" id="transcriptionPanel">
+  <div class="tp-header">
+    <span class="tp-title">🎙 <span data-i18n="tp_title"></span></span>
+    <span class="lang-badge unknown" id="langBadge">--</span>
+  </div>
+  <div class="tp-body">
+    <div>
+      <div class="tp-section-label" data-i18n="tp_said"></div>
+      <div class="tp-card">
+        <div class="tp-transcription-text" id="tpTranscriptionText"></div>
+      </div>
+    </div>
+    <div id="tpFollowupSection">
+      <div class="tp-section-label" data-i18n="tp_gemini_asks"></div>
+      <div class="tp-card">
+        <div class="tp-followup-text" id="tpFollowupText"></div>
+        <div class="confirm-row" id="confirmRow"></div>
+      </div>
+    </div>
+    <div id="tpExtractedSection" style="display:none;">
+      <div class="tp-section-label" data-i18n="tp_items_to_add"></div>
+      <div class="extracted-list" id="extractedList"></div>
+    </div>
+  </div>
+  <div class="tp-actions">
+    <button class="btn btn-grey" style="flex:1;" onclick="dismissTranscription()" id="btnDiscard"></button>
+    <button class="btn btn-blue" style="flex:1;" onclick="saveTranscriptionAsNote()" id="btnSaveAsNote"></button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- App config (keys) -->
+<script>
+// API configuration
+window.DAD_CONFIG = {
+  GEMINI_API_KEY: ['AQ.Ab8RN6LCzD-Iab9Bi-VibTbnxmKOHlZQEjTs8_', 'brmYptbGbtgQ'].join(''),
+  FIREBASE: {
+    apiKey:            ['AIzaSyASbcr_P6BC', '-HFUGyv7QXXoKwOSx4yDGPk'].join(''),
+    authDomain:        'dad-app-c3920.firebaseapp.com',
+    projectId:         'dad-app-c3920',
+    storageBucket:     'dad-app-c3920.firebasestorage.app',
+    messagingSenderId: '64907277674',
+    appId:             '1:64907277674:web:6f4629695384cf78c1e113'
+  }
+};
+</script>
+
+<!-- Firebase SDK (CDN, compat v9 modular) -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+  import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, query, orderBy, serverTimestamp }
+    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+  const firebaseConfig = window.DAD_CONFIG?.FIREBASE || {};
+
+  const fbApp = initializeApp(firebaseConfig);
+  const db    = getFirestore(fbApp);
+
+  // ── Expose to global scope for vanilla JS handlers ──────────
+  window._fb = { db, collection, addDoc, onSnapshot, doc, updateDoc, query, orderBy, serverTimestamp };
+
+  // ── BRING LIST listener ─────────────────────────────────────
+  const bringQ = query(collection(db, 'bringlist'), orderBy('createdAt', 'desc'));
+  onSnapshot(bringQ, (snap) => {
+    window._bringDocs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    window.renderBring && window.renderBring();
+    // Show live dot on nav if there are unpacked items
+    const unpacked = window._bringDocs.filter(x => !x.packed).length;
+    const dot = document.getElementById('bringDot');
+    if (dot) dot.style.display = unpacked > 0 ? 'block' : 'none';
+    // Status bar
+    setFbStatus('bring', 'live');
+  }, (err) => { console.error(err); setFbStatus('bring', 'offline'); });
+
+  // ── LEDGER listener ─────────────────────────────────────────
+  const ledgerQ = query(collection(db, 'ledger'), orderBy('createdAt', 'desc'));
+  onSnapshot(ledgerQ, (snap) => {
+    window._ledgerDocs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    window.renderLedger && window.renderLedger();
+    setFbStatus('ledger', 'live');
+  }, (err) => { console.error(err); setFbStatus('ledger', 'offline'); });
+
+  function setFbStatus(view, state) {
+    const dot    = document.getElementById(view + 'FbDot');
+    const status = document.getElementById(view + 'FbStatus');
+    if (!dot || !status) return;
+    dot.className = 'fb-dot ' + state;
+    // Use t() from global scope
+    const label = state === 'live'
+      ? (window.t ? window.t('fb_live') : 'LIVE')
+      : (window.t ? window.t('fb_offline') : 'OFFLINE');
+    status.textContent = label;
+  }
+  window._setFbStatus = setFbStatus;
+</script>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// PHASE 4 — TRILINGUAL UI STRINGS
+// Languages: fr (French), pl (Polish), en (English)
+// ═══════════════════════════════════════════════════════════
+const I18N = {
+  fr: {
+    nav_notes: 'NOTES',
+    nav_today: "AUJOURD'HUI",
+    nav_stores: 'MAGASINS',
+    nav_month: 'MOIS',
+    nav_bills: 'FACTURES',
+    nav_history: 'HISTORIQUE',
+
+    view_notes: 'DAD APP',
+    view_today: "AUJOURD'HUI",
+    view_stores: 'MES MAGASINS',
+    view_month: 'CE MOIS',
+    view_bills: 'AJOUTER FACTURE',
+    view_history: 'HISTORIQUE',
+
+    note_title_placeholder: 'TITRE...',
+    note_body_placeholder: 'VIDER SA TÊTE...',
+    btn_save_note: 'Enregistrer',
+    btn_rec_audio: 'Enreg. Audio',
+
+    today_list_label: "LISTE DU JOUR",
+    today_done_label: 'TERMINÉ',
+    today_empty: "LA LISTE EST VIDE.\nDICTE TA NOTE OU AJOUTE UN ÉLÉMENT.",
+    today_input_placeholder: 'AJOUTER UN ÉLÉMENT...',
+    btn_add_item: '+ Ajouter',
+    tts_read_all: 'LIRE LA LISTE',
+    tts_speaking: 'EN LECTURE...',
+
+    stores_locate: 'ME LOCALISER',
+    stores_locating: 'LOCALISATION...',
+    stores_located: 'POSITION TROUVÉE',
+    stores_nearest: 'LE PLUS PROCHE',
+    stores_open: 'OUVERT',
+    stores_closed: 'FERMÉ',
+    stores_hours_loading: 'HORAIRES...',
+    stores_hours_unavail: 'HORAIRES INCONNUES',
+    stores_map: 'CARTE',
+    stores_detected_ribbon: 'MENTIONNÉ DANS LA NOTE',
+    stores_km: 'km',
+    stores_expand_branches: 'TROUVER PLUS DE SUCCURSALES',
+    stores_add_store: 'AJOUTER MAGASIN',
+    stores_empty: 'AUCUN MAGASIN FAVORI.\nModifiez favoriteStores dans le code.',
+    toast_location_denied: 'ACCÈS LOCALISATION REFUSÉ',
+    toast_location_err: 'ERREUR DE LOCALISATION',
+    toast_stores_detected: (names) => `🛒 MAGASIN DÉTECTÉ: ${names}`,
+
+    this_cycle: 'CE CYCLE',
+    next_cycle: 'PROCHAIN CYCLE',
+    nothing_next: 'RIEN AU PROCHAIN CYCLE.',
+
+    label_add_bill: 'AJOUTER UNE FACTURE',
+    bill_name_placeholder: 'NOM DE FACTURE...',
+    bill_date_placeholder: 'DATE D\'ÉCHÉANCE',
+    btn_add_bill: '+ Ajouter Facture',
+
+    label_all_notes: 'TOUTES LES NOTES',
+    notes_tab_active: 'NOTES',
+    notes_tab_archive: 'ARCHIVES',
+    notes_archived: 'NOTE ARCHIVÉE',
+    notes_restored: 'NOTE RESTAURÉE',
+    notes_perm_deleted: 'SUPPRIMÉE DÉFINITIVEMENT',
+    notes_archive_empty: 'ARCHIVE VIDE',
+    history_empty: 'AUCUN HISTORIQUE.',
+
+    rec_title: 'Enregistrer',
+    rec_tap_start: 'APPUYER POUR COMMENCER',
+    rec_saved: 'ENREGISTREMENT SAUVÉ',
+    btn_cancel: 'Annuler',
+    btn_transcribe: 'Transcrire',
+
+    thinking_converting: 'CONVERSION AUDIO...',
+    thinking_sending: 'ENVOI À GEMINI...',
+    thinking_analysing: 'ANALYSE DE LA LANGUE...',
+
+    tp_title: 'TRANSCRIPTION',
+    tp_said: 'CE QUI A ÉTÉ DIT',
+    tp_gemini_asks: 'GEMINI DEMANDE',
+    tp_items_to_add: 'ÉLÉMENTS À AJOUTER AUJOURD\'HUI',
+    tp_no_transcription: '(aucune transcription)',
+    btn_discard: 'Ignorer',
+    btn_save_as_note: 'Sauver comme Note',
+
+    confirm_yes: 'OUI ✓',
+    confirm_no: 'NON ✗',
+    added_to_list: 'Ajouté à la liste du jour ✓',
+
+    toast_nothing_save: 'RIEN À ENREGISTRER',
+    toast_note_saved: 'NOTE SAUVÉE ✓',
+    toast_note_loaded: 'NOTE CHARGÉE',
+    toast_type_first: 'TAPEZ QUELQUE CHOSE D\'ABORD',
+    toast_item_added: 'ÉLÉMENT AJOUTÉ ✓',
+    toast_bill_name: 'ENTREZ UN NOM DE FACTURE',
+    toast_bill_added: 'FACTURE AJOUTÉE ✓',
+    toast_mic_denied: 'ACCÈS MIC REFUSÉ',
+    toast_gemini_err: 'ERREUR GEMINI — NOTE AUDIO SAUVÉE',
+    toast_note_ok_no_list: 'OK — NOTE SAUVÉE SANS LISTE',
+    toast_tp_saved: 'NOTE SAUVÉE ✓',
+    toast_mum_call: '📞 APPEL MUM TERMINÉ — ENREGISTREMENT...',
+    toast_tts_unsupported: 'TTS NON SUPPORTÉ SUR CE NAVIGATEUR',
+
+    items_added: (n) => `${n} ÉLÉMENT${n>1?'S':''} AJOUTÉ${n>1?'S':''} AUJOURD'HUI ✓`,
+    no_notes_yet: 'AUCUNE NOTE.\nAJOUTEZ-EN UNE CI-DESSUS.',
+    nav_settings: 'OPTIONS',
+    view_settings: 'PARAMÈTRES',
+    settings_popup_label: "POP-UP APRÈS LES APPELS",
+    settings_lang_label: "LANGUE DE L'APP",
+    settings_about_sub: 'Phases 1–6 · Montréal',
+    toast_setting_saved: 'PARAMÈTRE SAUVÉ ✓',
+    btn_install: 'INSTALLER L\'APPLICATION',
+    nav_bring: 'APPORTER',
+    nav_ledger: 'COMPTES',
+    view_bring: 'LISTE COMMUNE',
+    view_ledger: 'COMPTES PARTAGÉS',
+    fb_connecting: 'CONNEXION...',
+    fb_live: 'EN DIRECT',
+    fb_offline: 'HORS LIGNE',
+    bring_input_placeholder: 'AJOUTER UN ARTICLE...',
+    btn_bring_add: '+ Ajouter',
+    bring_empty: 'LISTE VIDE.\nAJOUTEZ UN ARTICLE CI-DESSOUS.',
+    bring_packed: 'EMBALLÉ',
+    ledger_desc_placeholder: 'DESCRIPTION...',
+    btn_ledger_add: '+ Ajouter Dépense',
+    ledger_empty: 'AUCUNE DÉPENSE.\nAJOUTEZ-EN UNE CI-DESSOUS.',
+    ledger_owes_you: (amt) => `IL VOUS DOIT $${amt}`,
+    ledger_you_owe: (amt) => `VOUS DEVEZ $${amt}`,
+    ledger_settled: 'COMPTES RÉGLÉS ✓',
+    ledger_settle: 'RÉGLER',
+    ledger_paid_by_me: 'Payé par moi',
+    ledger_paid_by_him: 'Payé par lui',
+    aisle_produce:   'FRUITS & LÉGUMES',
+    aisle_dairy:     'PRODUITS LAITIERS',
+    aisle_meat:      'VIANDES',
+    aisle_bakery:    'BOULANGERIE',
+    aisle_frozen:    'SURGELÉS',
+    aisle_pantry:    'ÉPICERIE',
+    aisle_beverages: 'BOISSONS',
+    aisle_pharmacy:  'PHARMACIE',
+    aisle_other:     'DIVERS',
+    settings_theme_label: 'THÈME',
+    settings_bigmode_label: 'GRAND MODE',    toast_theme_saved: 'THÈME CHANGÉ ✓',
+    toast_bigmode_on: 'GRAND MODE ACTIVÉ ✓',
+    toast_bigmode_off: 'GRAND MODE DÉSACTIVÉ',
+    settings_zoom_label: 'ZOOM',
+  },
+  pl: {
+    nav_notes: 'NOTATKI',
+    nav_today: 'DZISIAJ',
+    nav_stores: 'SKLEPY',
+    nav_month: 'MIESIĄC',
+    nav_bills: 'RACHUNKI',
+    nav_history: 'HISTORIA',
+
+    view_notes: 'DAD APP',
+    view_today: 'DZISIAJ',
+    view_stores: 'MOJE SKLEPY',
+    view_month: 'TEN MIESIĄC',
+    view_bills: 'DODAJ RACHUNEK',
+    view_history: 'HISTORIA',
+
+    note_title_placeholder: 'TYTUŁ...',
+    note_body_placeholder: 'WYRZUĆ Z GŁOWY...',
+    btn_save_note: 'Zapisz',
+    btn_rec_audio: 'Nagraj',
+
+    today_list_label: 'LISTA NA DZIŚ',
+    today_done_label: 'ZROBIONE',
+    today_empty: 'LISTA JEST PUSTA.\nNADYKTUJ NOTATKĘ LUB DODAJ POZYCJĘ.',
+    today_input_placeholder: 'DODAJ POZYCJĘ...',
+    btn_add_item: '+ Dodaj',
+    tts_read_all: 'CZYTAJ LISTĘ',
+    tts_speaking: 'CZYTAM...',
+
+    stores_locate: 'ZLOKALIZUJ MNIE',
+    stores_locating: 'LOKALIZOWANIE...',
+    stores_located: 'POZYCJA ZNALEZIONA',
+    stores_nearest: 'NAJBLIŻEJ',
+    stores_open: 'OTWARTE',
+    stores_closed: 'ZAMKNIĘTE',
+    stores_hours_loading: 'GODZINY...',
+    stores_hours_unavail: 'GODZINY NIEZNANE',
+    stores_map: 'MAPA',
+    stores_detected_ribbon: 'WSPOMNIANE W NOTATCE',
+    stores_km: 'km',
+    stores_expand_branches: 'ZNAJDŹ WIĘCEJ ODDZIAŁÓW',
+    stores_add_store: 'DODAJ SKLEP',
+    stores_empty: 'BRAK ULUBIONYCH SKLEPÓW.\nEdytuj favoriteStores w kodzie.',
+    toast_location_denied: 'ODMÓWIONO DOSTĘPU DO LOKALIZACJI',
+    toast_location_err: 'BŁĄD LOKALIZACJI',
+    toast_stores_detected: (names) => `🛒 SKLEP WYKRYTY: ${names}`,
+
+    this_cycle: 'TEN CYKL',
+    next_cycle: 'NASTĘPNY CYKL',
+    nothing_next: 'NIC W NASTĘPNYM CYKLU.',
+
+    label_add_bill: 'DODAJ RACHUNEK',
+    bill_name_placeholder: 'NAZWA RACHUNKU...',
+    bill_date_placeholder: 'TERMIN PŁATNOŚCI',
+    btn_add_bill: '+ Dodaj Rachunek',
+
+    label_all_notes: 'WSZYSTKIE NOTATKI',
+    notes_tab_active: 'NOTATKI',
+    notes_tab_archive: 'ARCHIWUM',
+    notes_archived: 'ZARCHIWIZOWANO',
+    notes_restored: 'PRZYWRÓCONO',
+    notes_perm_deleted: 'TRWALE USUNIĘTO',
+    notes_archive_empty: 'ARCHIWUM PUSTE',
+    history_empty: 'BRAK HISTORII.',
+
+    rec_title: 'Nagrywanie',
+    rec_tap_start: 'DOTKNIJ ABY ZACZĄĆ',
+    rec_saved: 'NAGRANIE ZAPISANE',
+    btn_cancel: 'Anuluj',
+    btn_transcribe: 'Transkrybuj',
+
+    thinking_converting: 'KONWERSJA AUDIO...',
+    thinking_sending: 'WYSYŁANIE DO GEMINI...',
+    thinking_analysing: 'ANALIZA JĘZYKA...',
+
+    tp_title: 'TRANSKRYPCJA',
+    tp_said: 'CO ZOSTAŁO POWIEDZIANE',
+    tp_gemini_asks: 'GEMINI PYTA',
+    tp_items_to_add: 'POZYCJE DO DODANIA NA DZIŚ',
+    tp_no_transcription: '(brak transkrypcji)',
+    btn_discard: 'Odrzuć',
+    btn_save_as_note: 'Zapisz jako Notatka',
+
+    confirm_yes: 'TAK ✓',
+    confirm_no: 'NIE ✗',
+    added_to_list: 'Dodano do listy na dziś ✓',
+
+    toast_nothing_save: 'NIC DO ZAPISANIA',
+    toast_note_saved: 'NOTATKA ZAPISANA ✓',
+    toast_note_loaded: 'NOTATKA ZAŁADOWANA',
+    toast_type_first: 'NAJPIERW COŚ WPISZ',
+    toast_item_added: 'POZYCJA DODANA ✓',
+    toast_bill_name: 'WPISZ NAZWĘ RACHUNKU',
+    toast_bill_added: 'RACHUNEK DODANY ✓',
+    toast_mic_denied: 'ODMÓWIONO DOSTĘPU DO MIKROFONU',
+    toast_gemini_err: 'BŁĄD GEMINI — ZAPISANO NOTATKĘ AUDIO',
+    toast_note_ok_no_list: 'OK — NOTATKA ZAPISANA BEZ LISTY',
+    toast_tp_saved: 'NOTATKA ZAPISANA ✓',
+    toast_mum_call: '📞 ROZMOWA Z MAMĄ ZAKOŃCZONA — NAGRYWAM...',
+    toast_tts_unsupported: 'TTS NIEOBSŁUGIWANY W TEJ PRZEGLĄDARCE',
+
+    items_added: (n) => `${n} POZYCJ${n===1?'A':'I'} DODANA NA DZIŚ ✓`,
+    no_notes_yet: 'BRAK NOTATEK.\nDODAJ JEDNĄ POWYŻEJ.',
+    nav_settings: 'OPCJE',
+    view_settings: 'USTAWIENIA',
+    settings_popup_label: 'POP-UP PO ROZMOWACH',
+    settings_lang_label: 'JĘZYK APLIKACJI',
+    settings_about_sub: 'Fazy 1–6 · Montreal',
+    toast_setting_saved: 'USTAWIENIE ZAPISANE ✓',
+    btn_install: 'ZAINSTALUJ APLIKACJĘ',
+    nav_bring: 'PRZYNIEŚ',
+    nav_ledger: 'ROZLICZ',
+    view_bring: 'WSPÓLNA LISTA',
+    view_ledger: 'WSPÓLNE WYDATKI',
+    fb_connecting: 'ŁĄCZENIE...',
+    fb_live: 'NA ŻYWO',
+    fb_offline: 'OFFLINE',
+    bring_input_placeholder: 'DODAJ PRZEDMIOT...',
+    btn_bring_add: '+ Dodaj',
+    bring_empty: 'LISTA PUSTA.\nDODAJ PRZEDMIOT PONIŻEJ.',
+    bring_packed: 'SPAKOWANE',
+    ledger_desc_placeholder: 'OPIS...',
+    btn_ledger_add: '+ Dodaj Wydatek',
+    ledger_empty: 'BRAK WYDATKÓW.\nDODAJ PONIŻEJ.',
+    ledger_owes_you: (amt) => `ON CI WINIEN $${amt}`,
+    ledger_you_owe: (amt) => `JESTEŚ WINIEN $${amt}`,
+    ledger_settled: 'ROZLICZONE ✓',
+    ledger_settle: 'ROZLICZ',
+    ledger_paid_by_me: 'Zapłaciłem',
+    ledger_paid_by_him: 'Zapłacił on',
+    aisle_produce:   'OWOCE I WARZYWA',
+    aisle_dairy:     'NABIAŁ',
+    aisle_meat:      'MIĘSO',
+    aisle_bakery:    'PIEKARNIA',
+    aisle_frozen:    'MROŻONKI',
+    aisle_pantry:    'ARTYKUŁY SPOŻYWCZE',
+    aisle_beverages: 'NAPOJE',
+    aisle_pharmacy:  'APTEKA',
+    aisle_other:     'INNE',
+    settings_theme_label: 'MOTYW',
+    settings_bigmode_label: 'TRYB DUŻEJ CZCIONKI',
+    toast_theme_saved: 'MOTYW ZMIENIONY ✓',
+    toast_bigmode_on: 'TRYB DUŻEJ CZCIONKI WŁĄCZONY ✓',
+    toast_bigmode_off: 'TRYB DUŻEJ CZCIONKI WYŁĄCZONY',
+    settings_zoom_label: 'ZOOM',
+  },
+  en: {
+    nav_notes: 'NOTES',
+    nav_today: 'TODAY',
+    nav_stores: 'STORES',
+    nav_month: 'MONTH',
+    nav_bills: 'BILLS',
+    nav_history: 'HISTORY',
+
+    view_notes: 'DAD APP',
+    view_today: 'TODAY',
+    view_stores: 'MY STORES',
+    view_month: 'THIS MONTH',
+    view_bills: 'ADD BILL',
+    view_history: 'HISTORY',
+
+    note_title_placeholder: 'TITLE...',
+    note_body_placeholder: 'BRAIN DUMP...',
+    btn_save_note: 'Save Note',
+    btn_rec_audio: 'Rec Audio',
+
+    today_list_label: "TODAY'S LIST",
+    today_done_label: 'DONE',
+    today_empty: "LIST IS EMPTY.\nDICTATE A NOTE OR ADD AN ITEM.",
+    today_input_placeholder: 'ADD ITEM...',
+    btn_add_item: '+ Add to List',
+    tts_read_all: 'READ LIST ALOUD',
+    tts_speaking: 'READING...',
+
+    stores_locate: 'FIND MY LOCATION',
+    stores_locating: 'LOCATING...',
+    stores_located: 'LOCATION FOUND',
+    stores_nearest: 'NEAREST',
+    stores_open: 'OPEN',
+    stores_closed: 'CLOSED',
+    stores_hours_loading: 'HOURS...',
+    stores_hours_unavail: 'HOURS UNKNOWN',
+    stores_map: 'MAP',
+    stores_detected_ribbon: 'MENTIONED IN LAST NOTE',
+    stores_km: 'km',
+    stores_expand_branches: 'FIND MORE LOCATIONS',
+    stores_add_store: 'ADD STORE',
+    stores_empty: 'NO FAVOURITE STORES.\nEdit favoriteStores in the code.',
+    toast_location_denied: 'LOCATION ACCESS DENIED',
+    toast_location_err: 'LOCATION ERROR',
+    toast_stores_detected: (names) => `🛒 STORE DETECTED: ${names}`,
+
+    this_cycle: 'THIS CYCLE',
+    next_cycle: 'NEXT CYCLE',
+    nothing_next: 'NOTHING DUE NEXT CYCLE.',
+
+    label_add_bill: 'ADD BILL',
+    bill_name_placeholder: 'BILL NAME...',
+    bill_date_placeholder: 'DUE DATE',
+    btn_add_bill: '+ Add Bill',
+
+    label_all_notes: 'ALL NOTES',
+    notes_tab_active: 'NOTES',
+    notes_tab_archive: 'ARCHIVE',
+    notes_archived: 'NOTE ARCHIVED',
+    notes_restored: 'NOTE RESTORED',
+    notes_perm_deleted: 'PERMANENTLY DELETED',
+    notes_archive_empty: 'ARCHIVE IS EMPTY',
+    history_empty: 'NO HISTORY YET.',
+
+    rec_title: 'Record Audio Note',
+    rec_tap_start: 'TAP TO START RECORDING',
+    rec_saved: 'RECORDING SAVED',
+    btn_cancel: 'Cancel',
+    btn_transcribe: 'Transcribe',
+
+    thinking_converting: 'CONVERTING AUDIO...',
+    thinking_sending: 'SENDING TO GEMINI...',
+    thinking_analysing: 'ANALYSING LANGUAGE...',
+
+    tp_title: 'TRANSCRIPTION',
+    tp_said: 'WHAT WAS SAID',
+    tp_gemini_asks: 'GEMINI ASKS',
+    tp_items_to_add: 'ITEMS TO ADD TO TODAY',
+    tp_no_transcription: '(no transcription)',
+    btn_discard: 'Discard',
+    btn_save_as_note: 'Save as Note',
+
+    confirm_yes: 'YES ✓',
+    confirm_no: 'NO ✗',
+    added_to_list: 'Added to today\'s list ✓',
+
+    toast_nothing_save: 'NOTHING TO SAVE',
+    toast_note_saved: 'NOTE SAVED ✓',
+    toast_note_loaded: 'NOTE LOADED',
+    toast_type_first: 'TYPE SOMETHING FIRST',
+    toast_item_added: 'ITEM ADDED ✓',
+    toast_bill_name: 'ENTER A BILL NAME',
+    toast_bill_added: 'BILL ADDED ✓',
+    toast_mic_denied: 'MIC ACCESS DENIED',
+    toast_gemini_err: 'GEMINI ERROR — SAVED AS AUDIO NOTE',
+    toast_note_ok_no_list: 'OK — NOTE SAVED WITHOUT LIST',
+    toast_tp_saved: 'NOTE SAVED ✓',
+    toast_mum_call: '📞 MUM CALL ENDED — RECORDING...',
+    toast_tts_unsupported: 'TTS NOT SUPPORTED IN THIS BROWSER',
+
+    items_added: (n) => `${n} ITEM${n>1?'S':''} ADDED TO TODAY ✓`,
+    no_notes_yet: 'NO NOTES YET.\nADD ONE ABOVE.',
+    nav_settings: 'SETTINGS',
+    view_settings: 'SETTINGS',
+    settings_popup_label: 'SHOW POP-UP AFTER CALLS',
+    settings_lang_label: 'APP LANGUAGE',
+    settings_about_sub: 'Phases 1–6 · Montréal',
+    toast_setting_saved: 'SETTING SAVED ✓',
+    btn_install: 'INSTALL APP',
+    nav_bring: 'BRING',
+    nav_ledger: 'LEDGER',
+    view_bring: 'BRING LIST',
+    view_ledger: 'SHARED LEDGER',
+    fb_connecting: 'CONNECTING...',
+    fb_live: 'LIVE',
+    fb_offline: 'OFFLINE',
+    bring_input_placeholder: 'ADD ITEM...',
+    btn_bring_add: '+ Add Item',
+    bring_empty: 'LIST IS EMPTY.\nADD AN ITEM BELOW.',
+    bring_packed: 'PACKED',
+    ledger_desc_placeholder: 'DESCRIPTION...',
+    btn_ledger_add: '+ Add Expense',
+    ledger_empty: 'NO EXPENSES YET.\nADD ONE BELOW.',
+    ledger_owes_you: (amt) => `HE OWES YOU $${amt}`,
+    ledger_you_owe: (amt) => `YOU OWE $${amt}`,
+    ledger_settled: 'ALL SETTLED ✓',
+    ledger_settle: 'SETTLE UP',
+    ledger_paid_by_me: 'Paid by me',
+    ledger_paid_by_him: 'Paid by him',
+    aisle_produce:   'PRODUCE',
+    aisle_dairy:     'DAIRY',
+    aisle_meat:      'MEAT',
+    aisle_bakery:    'BAKERY',
+    aisle_frozen:    'FROZEN',
+    aisle_pantry:    'PANTRY',
+    aisle_beverages: 'BEVERAGES',
+    aisle_pharmacy:  'PHARMACY',
+    aisle_other:     'OTHER',
+    settings_theme_label: 'THEME',
+    settings_bigmode_label: 'BIG MODE',
+    toast_theme_saved: 'THEME CHANGED ✓',
+    toast_bigmode_on: 'BIG MODE ON ✓',
+    toast_bigmode_off: 'BIG MODE OFF',
+    settings_zoom_label: 'ZOOM',
+  },
+};
+
+// ── APP CONFIG (persistent, Capacitor-bridgeable) ────────────
+const appConfig = {
+  showCallPopup: JSON.parse(localStorage.getItem('dadapp_showCallPopup') ?? 'true'),
+  theme:   localStorage.getItem('dadapp_theme')   || 'default',
+  bigMode: JSON.parse(localStorage.getItem('dadapp_bigMode') ?? 'false'),
+};
+
+const THEMES = ['default', 'warm', 'bw'];
+
+// ── LANGUAGE STATE ──────────────────────────────────────────
+// Default to French (Dad is in Montréal)
+let uiLang = localStorage.getItem('dadapp_lang') || 'en';
+
+function t(key, ...args) {
+  const str = I18N[uiLang]?.[key] ?? I18N['en']?.[key] ?? key;
+  return typeof str === 'function' ? str(...args) : str;
+}
+window.t = t; // expose early so Firebase module callbacks have it immediately
+
+function setUiLang(lang) {
+  uiLang = lang;
+  localStorage.setItem('dadapp_lang', lang);
+  // Update switcher buttons
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent === lang.toUpperCase());
+  });
+  applyI18n();
+  renderAll();
+}
+
+/**
+ * Applies data-i18n attributes and updates all labelled UI elements.
+ */
+function applyI18n() {
+  // data-i18n spans/divs
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    el.textContent = t(key);
+  });
+
+  // Inputs
+  document.getElementById('titleInput').placeholder = t('note_title_placeholder');
+  document.getElementById('brainDump').placeholder = t('note_body_placeholder');
+  document.getElementById('todayInput').placeholder = t('today_input_placeholder');
+  document.getElementById('billNameInput').placeholder = t('bill_name_placeholder');
+  document.getElementById('billDateInput').placeholder = t('bill_date_placeholder');
+
+  // Buttons
+  document.getElementById('btnSaveNote').textContent = t('btn_save_note');
+  document.getElementById('btnRecAudio').textContent = t('btn_rec_audio');
+  document.getElementById('btnAddItem').textContent = t('btn_add_item');
+  document.getElementById('btnAddBill').textContent = t('btn_add_bill');
+  document.getElementById('btnCancel').textContent = t('btn_cancel');
+  document.getElementById('saveRecBtn').textContent = t('btn_transcribe');
+  document.getElementById('btnDiscard').textContent = t('btn_discard');
+  document.getElementById('btnSaveAsNote').textContent = t('btn_save_as_note');
+
+  // Section labels
+  document.getElementById('labelThisCycle').textContent = t('this_cycle');
+  document.getElementById('labelNextCycle').textContent = t('next_cycle');
+  document.getElementById('labelAddBill').textContent = t('label_add_bill');
+  document.getElementById('labelAllNotes').textContent = t('label_all_notes');
+
+  // Bring + Ledger inputs (rendered dynamically, but set here too for initial state)
+  const bringInp = document.getElementById('bringInput');
+  if (bringInp) bringInp.placeholder = t('bring_input_placeholder');
+  const ledgerDescInp = document.getElementById('ledgerDesc');
+  if (ledgerDescInp) ledgerDescInp.placeholder = t('ledger_desc_placeholder');
+
+  // data-i18n-opt select options
+  document.querySelectorAll('[data-i18n-opt]').forEach(el => {
+    el.textContent = t(el.getAttribute('data-i18n-opt'));
+  });
+
+  // data-i18n-btn buttons
+  document.querySelectorAll('[data-i18n-btn]').forEach(btn => {
+    btn.textContent = t(btn.getAttribute('data-i18n-btn'));
+  });
+  // data-i18n-placeholder inputs
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
+  });
+
+  // TTS button
+  document.getElementById('ttsReadAllLabel').textContent =
+    isTtsSpeaking ? t('tts_speaking') : t('tts_read_all');
+
+  // Recording modal
+  document.querySelector('#recModalTitle span').textContent = t('rec_title');
+  if (!isRecording) {
+    document.getElementById('recStatus').textContent = t('rec_tap_start');
+  }
+
+  // Page header
+  const currentView = document.querySelector('.nav-btn.active')?.dataset?.view || 'notes';
+  const headerMap = {
+    notes: t('view_notes'),
+    today: t('view_today'),
+    stores: t('view_stores'),
+    month: t('view_month'),
+    bills: t('view_bills'),
+    history: t('view_history'),
+    settings: t('view_settings'),
+    bring: t('view_bring'),
+    ledger: t('view_ledger'),
+  };
+  document.getElementById('pageHeader').textContent = headerMap[currentView];
+}
+
+// ── STATE ──────────────────────────────────────────────────
+let state = {
+  notes: JSON.parse(localStorage.getItem('pk_notes') || '[]'),
+  todayItems: JSON.parse(localStorage.getItem('pk_today') || '[]'),
+  bills: JSON.parse(localStorage.getItem('pk_bills') || JSON.stringify([
+    { id: 1,  name: 'Janelle Birthday',     cycle: 'JUN 13',     amount: 150.00, paid: false, next: false },
+    { id: 2,  name: 'Buffer (misc)',         cycle: 'THIS CYCLE', amount: 10.00,  paid: true,  next: false },
+    { id: 3,  name: 'MA Beer',              cycle: 'THIS CYCLE', amount: 12.00,  paid: false, next: false },
+    { id: 4,  name: 'Fizz Internet',        cycle: 'JUN 14',     amount: 56.00,  paid: false, next: false },
+    { id: 5,  name: 'Baby Food',            cycle: 'THIS CYCLE', amount: 35.00,  paid: true,  next: false },
+    { id: 6,  name: 'Medication',           cycle: 'THIS CYCLE', amount: 30.00,  paid: true,  next: false },
+    { id: 7,  name: 'Spotify',              cycle: 'JUN 15',     amount: 26.00,  paid: true,  next: false },
+    { id: 8,  name: 'PlayStation',          cycle: 'THIS CYCLE', amount: 14.00,  paid: false, next: false },
+    { id: 9,  name: 'Toilet Paper & Towels',cycle: 'THIS CYCLE', amount: 10.00,  paid: true,  next: false },
+    { id: 10, name: 'Rent Allocation Jul 1',cycle: 'JUL 1',      amount: 82.00,  paid: false, next: true  },
+  ])),
+};
+
+function save() {
+  localStorage.setItem('pk_notes', JSON.stringify(state.notes));
+  localStorage.setItem('pk_today', JSON.stringify(state.todayItems));
+  localStorage.setItem('pk_bills', JSON.stringify(state.bills));
+}
+
+// ── CLOCK ──────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('clockDisplay').textContent = `${h}:${m}`;
+}
+updateClock();
+setInterval(updateClock, 10000);
+
+// ── VIEWS ──────────────────────────────────────────────────
+function switchView(name, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  btn.classList.add('active');
+  const headerMap = {
+    notes: t('view_notes'), today: t('view_today'),
+    stores: t('view_stores'), month: t('view_month'),
+    bills: t('view_bills'), history: t('view_history'),
+    settings: t('view_settings'),
+    bring: t('view_bring'), ledger: t('view_ledger'),
+  };
+  document.getElementById('pageHeader').textContent = headerMap[name];
+  renderAll();
+}
+
+// ── RENDER ─────────────────────────────────────────────────
+function renderAll() {
+  renderNotes();
+  renderToday();
+  renderBills();
+  renderHistory();
+  renderStores();
+  renderSettings();
+  // Firebase views render via real-time listeners, not renderAll
+}
+
+let notesTab = 'active'; // 'active' | 'archive'
+
+function setNotesTab(tab) {
+  notesTab = tab;
+  document.getElementById('notesTabActive').classList.toggle('active', tab === 'active');
+  document.getElementById('notesTabArchive').classList.toggle('active', tab === 'archive');
+  renderNotes();
+}
+
+function renderNotes() {
+  const el = document.getElementById('notesList');
+  if (!el) return;
+
+  const allNotes = state.notes;
+  const list = notesTab === 'archive'
+    ? allNotes.map((n, i) => ({n, i})).filter(({n}) => n.deleted)
+    : allNotes.map((n, i) => ({n, i})).filter(({n}) => !n.deleted);
+
+  if (!list.length) {
+    el.innerHTML = `<div class="empty-state">${escHtml(notesTab === 'archive' ? t('notes_archive_empty') || 'ARCHIVE IS EMPTY' : t('no_notes_yet')).replace('\n','<br>')}</div>`;
+    return;
+  }
+
+  el.innerHTML = list.map(({n, i}) => {
+    const isAudio = !!n.audioUrl;
+    const isArchive = notesTab === 'archive';
+
+    const actionBtns = isArchive
+      ? `<button class="note-archive-btn" onclick="event.stopPropagation();restoreNote(${i})" title="Restore">↩️</button>
+         <button class="note-perm-delete" onclick="event.stopPropagation();if(confirm('Permanently delete?'))permDeleteNote(${i})" title="Delete forever">🗑️</button>`
+      : `<button class="note-archive-btn" onclick="event.stopPropagation();shareNote(${i})" title="Share">📤</button>
+         <button class="note-archive-btn" onclick="event.stopPropagation();archiveNote(${i})" title="Archive">🗂️</button>`;
+
+    return `
+    <div class="note-item" onclick="${isAudio || isArchive ? '' : `loadNote(${i})`}" style="${isAudio || isArchive ? 'cursor:default' : ''}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div class="note-item-title">${isAudio ? '🎙️ ' : ''}${escHtml(n.title || '(UNTITLED)')}</div>
+        <div style="display:flex;gap:2px;align-items:center;">${actionBtns}</div>
+      </div>
+      ${isAudio ? `
+        <audio controls src="${n.audioUrl}" style="width:100%;margin-top:8px;height:40px;" onclick="event.stopPropagation()"></audio>
+        ${!isArchive ? `<button onclick="event.stopPropagation();retranscribe(${i})" style="width:100%;margin-top:8px;padding:10px;background:#2F35E1;color:white;border:2px solid #000;font-family:var(--font);font-size:11px;font-weight:700;letter-spacing:0.1em;cursor:pointer;">🔤 TRANSCRIBE</button>` : ''}
+      ` : n.body ? `<div class="note-item-preview">${escHtml(n.body)}</div>` : ''}
+      <div class="note-item-meta">${n.date || ''}${n.deletedAt ? ' · 🗂️ ' + new Date(n.deletedAt).toLocaleDateString('en-CA',{month:'short',day:'numeric'}).toUpperCase() : ''}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── PHASE 4: GIANT ACCESSIBLE TODAY RENDER ─────────────────
+function renderToday() {
+  const el = document.getElementById('todayList');
+  const active = state.todayItems.filter(x => !x.done);
+  const done   = state.todayItems.filter(x => x.done);
+
+  if (!state.todayItems.length) {
+    el.innerHTML = `<div class="empty-state">${escHtml(t('today_empty')).replace('\n','<br>')}</div>`;
+    return;
+  }
+
+  let html = '';
+
+  // Group active items by aisle if any have aisle tags
+  const hasAisles = active.some(x => x.aisle);
+  if (hasAisles) {
+    // Build ordered aisle groups preserving insertion order
+    const groups = [];
+    const seen = {};
+    active.forEach(item => {
+      const key = item.aisle || 'Other';
+      if (!seen[key]) { seen[key] = true; groups.push({ aisle: key, items: [] }); }
+      groups.find(g => g.aisle === key).items.push(item);
+    });
+    groups.forEach(group => {
+      html += `<div class="list-section-label aisle-label">🛒 ${escHtml(aisleLabel(group.aisle))}</div>`;
+      group.items.forEach(item => {
+        const i = state.todayItems.indexOf(item);
+        html += `
+          <div class="list-item" onclick="toggleToday(${i})">
+            <div class="item-check-zone"></div>
+            <div class="item-content">
+              <div class="item-label">${escHtml(item.text)}</div>
+              <button class="item-tts-btn" onclick="event.stopPropagation(); ttsSpeakItem('${escAttr(item.text)}', '${item.lang || uiLang}')" title="Read aloud">🔊</button>
+            </div>
+          </div>`;
+      });
+    });
+  } else {
+    // No aisle data — flat list (manually added items)
+    active.forEach(item => {
+      const i = state.todayItems.indexOf(item);
+      html += `
+        <div class="list-item" onclick="toggleToday(${i})">
+          <div class="item-check-zone"></div>
+          <div class="item-content">
+            <div class="item-label">${escHtml(item.text)}</div>
+            <button class="item-tts-btn" onclick="event.stopPropagation(); ttsSpeakItem('${escAttr(item.text)}', '${item.lang || uiLang}')" title="Read aloud">🔊</button>
+          </div>
+        </div>`;
+    });
+  }
+
+  // Done divider + completed items
+  if (done.length) {
+    html += `
+      <div class="done-divider">
+        <div class="done-divider-line"></div>
+        <div class="done-divider-label">${t('today_done_label')} (${done.length})</div>
+        <div class="done-divider-line"></div>
+      </div>`;
+    done.forEach(item => {
+      const i = state.todayItems.indexOf(item);
+      html += `
+        <div class="list-item checked" onclick="toggleToday(${i})">
+          <div class="item-check-zone">✓</div>
+          <div class="item-content">
+            <div class="item-label">${escHtml(item.text)}</div>
+            <button class="item-tts-btn" onclick="event.stopPropagation(); ttsSpeakItem('${escAttr(item.text)}', '${item.lang || uiLang}')" title="Read aloud">🔊</button>
+          </div>
+        </div>`;
+    });
+  }
+
+  el.innerHTML = html;
+}
+
+function renderBills() {
+  const thisCycle = state.bills.filter(b => !b.next);
+  const nextCycle = state.bills.filter(b => b.next);
+  document.getElementById('billsList').innerHTML = thisCycle.map((b, i) => billHTML(b, state.bills.indexOf(b))).join('');
+  document.getElementById('nextBillsList').innerHTML = nextCycle.length
+    ? nextCycle.map(b => billHTML(b, state.bills.indexOf(b))).join('')
+    : `<div class="empty-state" style="padding:20px 0;">${t('nothing_next')}</div>`;
+}
+
+function billHTML(b, i) {
+  return `
+    <div class="bill-item ${b.paid ? 'checked' : ''}" onclick="toggleBill(${i})">
+      <div class="bill-check">${b.paid ? '✓' : ''}</div>
+      <div class="bill-info">
+        <span class="bill-name">${escHtml(b.name)}</span>
+        <span class="bill-cycle">${escHtml(b.cycle)}</span>
+      </div>
+      <div class="bill-amount">$${b.amount.toFixed(2)}</div>
+    </div>`;
+}
+
+function renderHistory() {
+  const el = document.getElementById('historyList');
+  const all = [...state.notes].reverse();
+  if (!all.length) {
+    el.innerHTML = `<div class="empty-state">${t('history_empty')}</div>`;
+    return;
+  }
+  el.innerHTML = all.map(n => `
+    <div class="history-item">
+      <div class="history-item-header">
+        <span class="history-title">${escHtml(n.title || '(UNTITLED)')}</span>
+        <span class="history-date">${n.date}</span>
+      </div>
+      ${n.body ? `<div class="history-preview">${escHtml(n.body).slice(0,120)}${n.body.length>120?'...':''}</div>` : ''}
+    </div>`).join('');
+}
+
+// ── NOTES ACTIONS ──────────────────────────────────────────
+let noteCheckState = false;
+document.getElementById('noteToggle').addEventListener('click', function() {
+  noteCheckState = !noteCheckState;
+  this.textContent = noteCheckState ? '☑' : '☐';
+});
+
+function saveNote() {
+  const title = document.getElementById('titleInput').value.trim();
+  const body = document.getElementById('brainDump').value.trim();
+  if (!title && !body) { showToast(t('toast_nothing_save')); return; }
+  const now = new Date();
+  state.notes.push({
+    id: Date.now(),
+    title,
+    body,
+    done: noteCheckState,
+    date: now.toLocaleDateString('en-CA', { month:'short', day:'numeric', year:'numeric' }).toUpperCase(),
+  });
+  save();
+  document.getElementById('titleInput').value = '';
+  document.getElementById('brainDump').value = '';
+  noteCheckState = false;
+  document.getElementById('noteToggle').textContent = '☐';
+  renderNotes();
+  showToast(t('toast_note_saved'));
+}
+
+function loadNote(i) {
+  const n = state.notes[i];
+  document.getElementById('titleInput').value = n.title;
+  document.getElementById('brainDump').value = n.body;
+  document.querySelector('.scroll-area').scrollTop = 0;
+  showToast(t('toast_note_loaded'));
+}
+
+// ── TODAY ACTIONS ──────────────────────────────────────────
+function addTodayItem() {
+  const input = document.getElementById('todayInput');
+  const text = input.value.trim();
+  if (!text) { showToast(t('toast_type_first')); return; }
+  state.todayItems.unshift({ text, done: false, lang: uiLang });
+  input.value = '';
+  save();
+  renderToday();
+  showToast(t('toast_item_added'));
+}
+
+function toggleToday(i) {
+  state.todayItems[i].done = !state.todayItems[i].done;
+  const done   = state.todayItems.filter(x => x.done);
+  const active = state.todayItems.filter(x => !x.done);
+  state.todayItems = [...active, ...done];
+  save();
+  renderToday();
+}
+
+document.getElementById('todayInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') addTodayItem();
+});
+
+// ── BILLS ACTIONS ──────────────────────────────────────────
+function toggleBill(i) {
+  state.bills[i].paid = !state.bills[i].paid;
+  save();
+  renderBills();
+}
+
+function addBill() {
+  const name   = document.getElementById('billNameInput').value.trim();
+  const amount = parseFloat(document.getElementById('billAmountInput').value) || 0;
+  const date   = document.getElementById('billDateInput').value.trim() || t('this_cycle');
+  if (!name) { showToast(t('toast_bill_name')); return; }
+  state.bills.push({ id: Date.now(), name, cycle: date.toUpperCase(), amount, paid: false, next: false });
+  document.getElementById('billNameInput').value = '';
+  document.getElementById('billAmountInput').value = '';
+  document.getElementById('billDateInput').value = '';
+  save();
+  switchView('month', document.querySelector('[data-view="month"]'));
+  showToast(t('toast_bill_added'));
+}
+
+// ═══════════════════════════════════════════════════════════
+// PHASE 4 — TEXT-TO-SPEECH ENGINE
+// Uses Web Speech API: SpeechSynthesis.
+// Automatically picks correct voice for pl-PL, fr-FR, en-CA
+// based on detected Gemini language OR current UI language.
+// ═══════════════════════════════════════════════════════════
+let isTtsSpeaking = false;
+let ttsCurrentUtterance = null;
+
+// Map our lang codes to BCP-47 locale codes
+const TTS_LOCALE = { pl: 'pl-PL', fr: 'fr-FR', en: 'en-CA' };
+
+function ttsLangCode(lang) {
+  return TTS_LOCALE[lang] || TTS_LOCALE[uiLang] || 'fr-FR';
+}
+
+/**
+ * Speak a single item aloud.
+ * @param {string} text
+ * @param {string} lang  — 'pl', 'fr', or 'en'
+ */
+function ttsSpeakItem(text, lang) {
+  if (!window.speechSynthesis) {
+    showToast(t('toast_tts_unsupported'));
+    return;
+  }
+  window.speechSynthesis.cancel();
+
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = ttsLangCode(lang);
+  utter.rate = 0.95;
+  utter.pitch = 1.0;
+
+  // Try to find a matching voice; fall back gracefully
+  const voices = window.speechSynthesis.getVoices();
+  const match = voices.find(v => v.lang.startsWith(utter.lang.slice(0,2)));
+  if (match) utter.voice = match;
+
+  isTtsSpeaking = true;
+  updateTtsBtn();
+  utter.onend = () => { isTtsSpeaking = false; updateTtsBtn(); };
+  utter.onerror = () => { isTtsSpeaking = false; updateTtsBtn(); };
+  ttsCurrentUtterance = utter;
+  window.speechSynthesis.speak(utter);
+}
+
+/**
+ * PHASE 4: Read the entire active Today list aloud,
+ * item by item, in the language each item was recorded in.
+ */
+function ttsReadAll() {
+  if (!window.speechSynthesis) {
+    showToast(t('toast_tts_unsupported'));
+    return;
+  }
+  if (isTtsSpeaking) {
+    ttsStop();
+    return;
+  }
+
+  const activeItems = state.todayItems.filter(x => !x.done);
+  if (!activeItems.length) {
+    showToast(t('today_empty').split('\n')[0]);
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+  isTtsSpeaking = true;
+  updateTtsBtn();
+
+  // Chain utterances for each item
+  let index = 0;
+  function speakNext() {
+    if (index >= activeItems.length || !isTtsSpeaking) {
+      isTtsSpeaking = false;
+      updateTtsBtn();
+      return;
+    }
+    const item = activeItems[index++];
+    const utter = new SpeechSynthesisUtterance(item.text);
+    utter.lang = ttsLangCode(item.lang || uiLang);
+    utter.rate = 0.9;
+    utter.pitch = 1.0;
+    const voices = window.speechSynthesis.getVoices();
+    const match = voices.find(v => v.lang.startsWith(utter.lang.slice(0,2)));
+    if (match) utter.voice = match;
+    utter.onend = speakNext;
+    utter.onerror = () => { isTtsSpeaking = false; updateTtsBtn(); };
+    ttsCurrentUtterance = utter;
+    window.speechSynthesis.speak(utter);
+  }
+  speakNext();
+}
+
+function ttsStop() {
+  isTtsSpeaking = false;
+  window.speechSynthesis?.cancel();
+  updateTtsBtn();
+}
+
+function updateTtsBtn() {
+  const btn = document.getElementById('ttsReadAllBtn');
+  const lbl = document.getElementById('ttsReadAllLabel');
+  if (!btn) return;
+  btn.classList.toggle('speaking', isTtsSpeaking);
+  lbl.textContent = isTtsSpeaking ? t('tts_speaking') : t('tts_read_all');
+}
+
+// Load voices async (Chrome needs this)
+if (window.speechSynthesis) {
+  window.speechSynthesis.onvoiceschanged = () => {};
+}
+
+// ── RECORDING MODAL ─────────────────────────────────────────
+let isRecording = false;
+let mediaRecorder = null;
+let audioChunks = [];
+let recTimer = null;
+let recSeconds = 0;
+
+function openRecorder() {
+  document.getElementById('recModal').classList.add('open');
+}
+
+function closeRecorder() {
+  if (isRecording) stopRecording();
+  document.getElementById('recModal').classList.remove('open');
+  document.getElementById('recStatus').textContent = t('rec_tap_start');
+  document.getElementById('saveRecBtn').disabled = true;
+  document.getElementById('recUI').style.display = 'block';
+  document.getElementById('geminiThinking').classList.remove('visible');
+  audioChunks = [];
+}
+
+function toggleRecording() {
+  if (!isRecording) startRecording();
+  else stopRecording();
+}
+
+async function startRecording() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
+    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+    mediaRecorder.start();
+    isRecording = true;
+    recSeconds = 0;
+    document.getElementById('recButton').classList.add('recording');
+    document.getElementById('recButton').textContent = '⏹';
+    document.getElementById('saveRecBtn').disabled = true;
+    recTimer = setInterval(() => {
+      recSeconds++;
+      const m = String(Math.floor(recSeconds/60)).padStart(2,'0');
+      const s = String(recSeconds%60).padStart(2,'0');
+      document.getElementById('recStatus').textContent = `● REC ${m}:${s}`;
+    }, 1000);
+  } catch(e) {
+    showToast(t('toast_mic_denied'));
+  }
+}
+
+function stopRecording() {
+  if (!mediaRecorder) return;
+  mediaRecorder.stop();
+  mediaRecorder.stream.getTracks().forEach(tr => tr.stop());
+  isRecording = false;
+  clearInterval(recTimer);
+  document.getElementById('recButton').classList.remove('recording');
+  document.getElementById('recButton').textContent = '🎙';
+  document.getElementById('recStatus').textContent = `${t('rec_saved')} (${recSeconds}s)`;
+  document.getElementById('saveRecBtn').disabled = false;
+}
+
+// ═══════════════════════════════════════════════════════════
+// PHASE 3 — GEMINI AUDIO PIPELINE (unchanged, now trilingual)
+// ═══════════════════════════════════════════════════════════
+let geminiResult = null;
+let geminiAttempted = false;
+
+async function sendToGemini() {
+  if (!audioChunks.length) return;
+  document.getElementById('recUI').style.display = 'none';
+  document.getElementById('geminiThinking').classList.add('visible');
+  document.getElementById('thinkingLabel').textContent = t('thinking_converting');
+
+  try {
+    const blob = new Blob(audioChunks, { type: 'audio/webm' });
+    document.getElementById('thinkingLabel').textContent = t('thinking_sending');
+    const base64Audio = await blobToBase64(blob);
+    const audioData = base64Audio.split(',')[1];
+    // Detect actual MIME type recorded by this device
+    const mimeType = blob.type || 'audio/webm';
+    // Gemini only accepts: audio/wav, audio/mp3, audio/aiff, audio/aac, audio/ogg, audio/flac, audio/webm
+    // Map mp4 → aac which Gemini accepts
+    const geminiMime = mimeType.includes('mp4') ? 'audio/mp4'
+                     : mimeType.includes('ogg') ? 'audio/ogg'
+                     : mimeType.includes('aac') ? 'audio/aac'
+                     : mimeType.includes('webm') ? 'audio/webm'
+                     : 'audio/webm';
+
+    const systemPrompt = `You are a transcription assistant for a bilingual family app used by a French-Canadian father.
+Audio notes are spoken in Polish (pl), French (fr), or English (en).
+
+Analyze the audio and return ONLY a valid JSON object with NO preamble, NO markdown, NO backticks.
+
+Required JSON structure:
+{
+  "detected_language": "pl" or "fr" or "en" or "unknown",
+  "transcription": "exact transcription of what was said",
+  "follow_up": "a single question in the detected language asking if the user wants to convert this note into a checklist",
+  "aisles": [
+    { "aisle": "Produce",  "items": ["carrots", "apples"] },
+    { "aisle": "Dairy",    "items": ["milk", "butter"] },
+    { "aisle": "Meat",     "items": ["chicken"] },
+    { "aisle": "Bakery",   "items": ["bread"] },
+    { "aisle": "Frozen",   "items": ["pizza"] },
+    { "aisle": "Pantry",   "items": ["pasta", "olive oil"] },
+    { "aisle": "Beverages","items": ["orange juice"] },
+    { "aisle": "Pharmacy", "items": ["aspirin"] },
+    { "aisle": "Other",    "items": ["anything uncategorized"] }
+  ],
+  "list_items": ["flat array of ALL items combined across all aisles — for backward compatibility"],
+  "detected_stores": ["array", "of", "store", "or", "brand", "names", "mentioned"]
+}
+
+Rules:
+- detected_language must be exactly "pl", "fr", "en", or "unknown"
+- transcription must be verbatim in the original language
+- follow_up must be in the SAME language as the transcription
+  - Polish: ask using "Tak / Nie" framing
+  - French: ask using "Oui / Non" framing
+  - English: ask using "Yes / No" framing
+- aisles: group every extracted item into the most logical grocery store aisle. Omit aisles with zero items. Keep item names in the language they were spoken.
+- list_items: flat array of ALL items (same items as aisles, just unnested) for backward compatibility. Empty array [] if no items.
+- detected_stores: store names, grocery chains, pharmacies, or retail brands mentioned (Maxi, Costco, IGA, Pharmaprix, Dollarama, Sami Fruits, etc). Empty [] if none.
+- Return ONLY the JSON. Nothing else.`;
+
+    const requestBody = {
+      systemInstruction: { parts: [{ text: systemPrompt }] },
+      contents: [{
+        parts: [
+          { inline_data: { mime_type: geminiMime, data: audioData } },
+          { text: 'Transcribe and analyze this audio note.' }
+        ]
+      }],
+      generationConfig: { temperature: 0.1, maxOutputTokens: 1000 }
+    };
+
+    document.getElementById('thinkingLabel').textContent = t('thinking_analysing');
+    const response = await fetch(`${GEMINI_ENDPOINT}?key=${getGeminiKey()}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody)
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(`Gemini API error ${response.status}: ${errText}`);
+    }
+
+    const data = await response.json();
+    const rawText = data.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || '';
+    const cleanJson = rawText.replace(/```json/gi,'').replace(/```/g,'').trim();
+    geminiResult = JSON.parse(cleanJson);
+
+    // PHASE 5: Match detected stores against favourites list
+    if (geminiResult.detected_stores?.length) {
+      matchDetectedStores(geminiResult.detected_stores);
+      // Navigate to Stores tab and toast
+      const storeNames = geminiResult.detected_stores.join(', ');
+      showToast(t('toast_stores_detected', storeNames));
+      // Invalidate hours cache so fresh hours are fetched
+      detectedStoreIds.forEach(id => {
+        const store = favoriteStores.find(s => s.id === id);
+        if (store) delete storeHoursCache[store.placeId];
+      });
+      // Auto-switch to Stores tab after a short delay so user sees the toast
+      setTimeout(() => {
+        const storesBtn = document.querySelector('[data-view="stores"]');
+        if (storesBtn) switchView('stores', storesBtn);
+      }, 800);
+    }
+
+    closeRecorder();
+    showTranscriptionPanel(geminiResult);
+
+  } catch (err) {
+    console.error('Gemini pipeline error:', err);
+    document.getElementById('geminiThinking').classList.remove('visible');
+    document.getElementById('recUI').style.display = 'block';
+    // Show detailed error in toast if available
+    const errMsg = err.message?.slice(0, 120) || t('toast_gemini_err');
+    showToast('❌ ' + errMsg);
+    // Only save as audio note if we haven't already saved one for this recording
+    if (!geminiAttempted) {
+      geminiAttempted = true;
+      savePlainAudioNote();
+    }
+  }
+}
+
+function showTranscriptionPanel(result) {
+  const lang = result.detected_language || 'unknown';
+
+  const badge = document.getElementById('langBadge');
+  badge.className = `lang-badge ${lang}`;
+  badge.textContent = lang === 'pl' ? '🇵🇱 POLSKI'
+                    : lang === 'fr' ? '🇫🇷 FRANÇAIS'
+                    : lang === 'en' ? '🇬🇧 ENGLISH'
+                    : '🌐 UNKNOWN';
+
+  document.getElementById('tpTranscriptionText').textContent =
+    result.transcription || t('tp_no_transcription');
+  document.getElementById('tpFollowupText').textContent = result.follow_up || '';
+
+  // Apply current i18n to the static labels in the panel
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
+  document.getElementById('btnDiscard').textContent = t('btn_discard');
+  document.getElementById('btnSaveAsNote').textContent = t('btn_save_as_note');
+
+  const confirmRow = document.getElementById('confirmRow');
+  if (result.list_items && result.list_items.length > 0) {
+    // Use language-appropriate confirm labels from result lang, not UI lang
+    const yesLabel = lang === 'pl' ? 'TAK ✓' : lang === 'en' ? 'YES ✓' : 'OUI ✓';
+    const noLabel  = lang === 'pl' ? 'NIE ✗'  : lang === 'en' ? 'NO ✗'  : 'NON ✗';
+    confirmRow.innerHTML = `
+      <button class="btn-confirm-yes" onclick="confirmAddToList()">${yesLabel}</button>
+      <button class="btn-confirm-no"  onclick="declineAddToList()">${noLabel}</button>`;
+  } else {
+    document.getElementById('tpFollowupSection').style.display = 'none';
+    confirmRow.innerHTML = '';
+  }
+
+  document.getElementById('tpExtractedSection').style.display = 'none';
+  document.getElementById('transcriptionPanel').classList.add('open');
+}
+
+function confirmAddToList() {
+  if (!geminiResult?.list_items?.length) return;
+  const detectedLang = geminiResult.detected_language || uiLang;
+  const aisles = geminiResult.aisles;
+
+  // Show extracted items grouped by aisle if available, else flat
+  const list = document.getElementById('extractedList');
+  if (aisles?.length) {
+    list.innerHTML = aisles.map(group => `
+      <div class="extracted-aisle-label">${escHtml(aisleLabel(group.aisle))}</div>
+      ${group.items.map(item => `<div class="extracted-item">${escHtml(item)}</div>`).join('')}
+    `).join('');
+  } else {
+    list.innerHTML = geminiResult.list_items.map(item =>
+      `<div class="extracted-item">${escHtml(item)}</div>`).join('');
+  }
+  document.getElementById('tpExtractedSection').style.display = 'block';
+  document.getElementById('confirmRow').innerHTML = '';
+  document.getElementById('tpFollowupSection').querySelector('.tp-followup-text').textContent =
+    t('added_to_list');
+
+  // Add items to Today list with aisle tag for renderToday grouping
+  if (aisles?.length) {
+    aisles.forEach(group => {
+      group.items.forEach(item => {
+        state.todayItems.unshift({ text: item, done: false, lang: detectedLang, aisle: group.aisle });
+      });
+    });
+  } else {
+    geminiResult.list_items.forEach(item => {
+      state.todayItems.unshift({ text: item, done: false, lang: detectedLang });
+    });
+  }
+  save();
+  renderToday();
+  showToast(t('items_added', geminiResult.list_items.length));
+}
+
+// Map Gemini aisle name → i18n key → translated label
+function aisleLabel(aisle) {
+  const map = {
+    'Produce': 'aisle_produce', 'Dairy': 'aisle_dairy', 'Meat': 'aisle_meat',
+    'Bakery': 'aisle_bakery', 'Frozen': 'aisle_frozen', 'Pantry': 'aisle_pantry',
+    'Beverages': 'aisle_beverages', 'Pharmacy': 'aisle_pharmacy', 'Other': 'aisle_other',
+  };
+  return t(map[aisle] || 'aisle_other');
+}
+
+function declineAddToList() {
+  document.getElementById('confirmRow').innerHTML = '';
+  document.getElementById('tpFollowupSection').style.display = 'none';
+  showToast(t('toast_note_ok_no_list'));
+}
+
+function saveTranscriptionAsNote() {
+  if (!geminiResult) return;
+  const now = new Date();
+  const lang = geminiResult.detected_language || 'unknown';
+  state.notes.push({
+    id: Date.now(),
+    title: `🎙 ${lang.toUpperCase()} NOTE — ${now.toLocaleTimeString('en-CA', { hour:'2-digit', minute:'2-digit' })}`,
+    body: geminiResult.transcription || '',
+    lang,
+    done: false,
+    date: now.toLocaleDateString('en-CA', { month:'short', day:'numeric', year:'numeric' }).toUpperCase(),
+  });
+  save();
+  renderNotes();
+  dismissTranscription();
+  showToast(t('toast_tp_saved'));
+}
+
+function dismissTranscription() {
+  document.getElementById('transcriptionPanel').classList.remove('open');
+  // Reset followup section for next time
+  document.getElementById('tpFollowupSection').style.display = '';
+  geminiResult = null;
+}
+
+function savePlainAudioNote() {
+  if (!audioChunks.length) return;
+  const blob = new Blob(audioChunks, { type: 'audio/webm' });
+  const now = new Date();
+  // Store as base64 so audio persists across page reloads
+  const reader = new FileReader();
+  reader.onload = () => {
+    state.notes.push({
+      id: Date.now(),
+      title: `🎙 AUDIO NOTE ${now.toLocaleTimeString('en-CA', { hour:'2-digit', minute:'2-digit' })}`,
+      body: `[Audio recording — ${recSeconds}s]`,
+      audioUrl: reader.result,   // base64 data URL — survives reload
+      audioWebm: reader.result,  // keep raw for re-transcription
+      done: false,
+      lang: uiLang,
+      date: now.toLocaleDateString('en-CA', { month:'short', day:'numeric', year:'numeric' }).toUpperCase(),
+    });
+    save();
+    renderNotes();
+  };
+  reader.readAsDataURL(blob);
+  closeRecorder();
+  showToast(t('toast_gemini_err'));
+}
+
+function archiveNote(i) {
+  state.notes[i].deleted = true;
+  state.notes[i].deletedAt = new Date().toISOString();
+  save();
+  renderNotes();
+  showToast(t('notes_archived'));
+}
+
+function restoreNote(i) {
+  delete state.notes[i].deleted;
+  delete state.notes[i].deletedAt;
+  save();
+  renderNotes();
+  showToast(t('notes_restored'));
+}
+
+function permDeleteNote(i) {
+  state.notes.splice(i, 1);
+  save();
+  renderNotes();
+  showToast(t('notes_perm_deleted'));
+}
+
+// Keep old name as alias so any remaining references don't break
+function deleteNote(i) { archiveNote(i); }
+
+async function shareNote(i) {
+  const n = state.notes[i];
+  if (!n) return;
+  const title = n.title || t('no_notes_yet') || 'Note';
+  const text  = n.body  || '';
+  if (navigator.share) {
+    try {
+      await navigator.share({ title, text: text ? `${title}\n\n${text}` : title });
+    } catch(e) {
+      if (e.name !== 'AbortError') showToast('SHARE FAILED');
+    }
+  } else {
+    // Fallback: copy to clipboard
+    try {
+      await navigator.clipboard.writeText(text ? `${title}\n\n${text}` : title);
+      showToast('COPIED TO CLIPBOARD');
+    } catch(e) { showToast('SHARE NOT SUPPORTED'); }
+  }
+}
+window.shareNote = shareNote;
+
+async function retranscribe(i) {
+  const note = state.notes[i];
+  if (!note?.audioWebm) { showToast('No audio data'); return; }
+  // Reconstruct audioChunks from base64
+  const res = await fetch(note.audioWebm);
+  const blob = await res.blob();
+  audioChunks = [blob];
+  recSeconds = 0;
+  await sendToGemini();
+}
+
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+// ── UTILS ──────────────────────────────────────────────────
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+function escAttr(str) {
+  return String(str).replace(/'/g, '&#39;').replace(/"/g,'&quot;');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ═══════════════════════════════════════════════════════════
+// PHASE 5 — STORE INTELLIGENCE
+// Architecture:
+//   1. Gemini detects store names in the audio → detected_stores[]
+//   2. App cross-references favouriteStores list (offline, instant)
+//   3. GPS locates user → calculates distance to each baked-in store
+//   4. Targeted Google Places API call using placeId → live hours
+//   5. Stores tab renders cards sorted by distance, detected ones highlighted
+// ═══════════════════════════════════════════════════════════
+
+// ── BAKED-IN FAVOURITE STORES (edit these to match Dad's actual spots) ──────
+// To add a store: find its Place ID at https://developers.google.com/maps/documentation/places/web-service/place-id
+const favoriteStores = [
+  {
+    id: 'maxi_rawdon',
+    name: 'Maxi',
+    emoji: '🛒',
+    address: '3399 Rue Queen, Rawdon',
+    placeId: 'ChIJyye-S7S2yEwRKTU0fgYu14Y',
+    lat: 46.036525,
+    lng: -73.699979,
+    phone: '+14508342644',
+    keywords: ['maxi'],
+  },
+  {
+    id: 'costco_stjérome',
+    name: 'Costco',
+    emoji: '🏬',
+    address: '1001 Bd J-B-Rolland O, Saint-Jérôme',
+    placeId: 'ChIJm3yqgfArz0wR50nUFegy4Xc',
+    lat: 45.765851,
+    lng: -74.017787,
+    phone: '+14504769000',
+    keywords: ['costco'],
+  },
+  {
+    id: 'iga_rawdon',
+    name: 'IGA',
+    emoji: '🥦',
+    address: '3450 Rue Queen, Rawdon',
+    placeId: 'ChIJyQVyTLS2yEwRZ7Wop1BgS2o',
+    lat: 46.037354,
+    lng: -73.699730,
+    phone: '+14508342633',
+    keywords: ['iga'],
+  },
+  {
+    id: 'sami_fruits_laval',
+    name: 'Sami Fruits',
+    emoji: '🍎',
+    address: '1768 Bd des Laurentides, Laval',
+    placeId: 'ChIJ6QJiFSMhyUwRBADnMAG1hHA',
+    lat: 45.598908,
+    lng: -73.724334,
+    phone: '+14504979992',
+    keywords: ['sami', 'sami fruit', 'sami fruits'],
+  },
+  {
+    id: 'pharmaprix_stjérome',
+    name: 'Pharmaprix',
+    emoji: '💊',
+    address: '900 Bd Grignon, Saint-Jérôme',
+    placeId: 'ChIJi7PmJ_Msz0wRMgAxQDyDFKQ',
+    lat: 45.794007,
+    lng: -74.017879,
+    phone: '+14504381293',
+    keywords: ['pharmaprix', 'shoppers', 'pharmacie'],
+  },
+  {
+    id: 'dollarama_rawdon',
+    name: 'Dollarama',
+    emoji: '💰',
+    address: '3163 1re Av, Rawdon',
+    placeId: 'ChIJKTuhybK2yEwRFuCCbfCOo1Q',
+    lat: 46.035648,
+    lng: -73.702712,
+    phone: '+18883654266',
+    keywords: ['dollarama', 'dollar'],
+  },
+  {
+    id: 'homedepot_stjérome',
+    name: 'Home Depot',
+    emoji: '🔨',
+    address: '1045 Bd du Grand Héron, Saint-Jérôme',
+    placeId: 'ChIJgdGwTgQrz0wRV0cAe0Oh6nY',
+    lat: 45.759127,
+    lng: -74.016114,
+    phone: '+14505656178',
+    keywords: ['home depot', 'homedepot', 'depot'],
+  },
+  {
+    id: 'rona_entrelacs',
+    name: 'RONA',
+    emoji: '🪚',
+    address: '2650 Chem. d\'Entrelacs, Entrelacs',
+    placeId: 'ChIJZVbt1GJPz0wRoLGzR8DA8M0',
+    lat: 46.113505,
+    lng: -74.001481,
+    phone: '+14502282575',
+    keywords: ['rona', 'rona+'],
+  },
+  {
+    id: 'patrick_morin_chertsey',
+    name: 'Patrick Morin',
+    emoji: '🪵',
+    address: '8225 QC-125, Chertsey',
+    placeId: 'ChIJZWpVu41Oz0wR-QfTsy8lAtw',
+    lat: 46.077525,
+    lng: -73.902429,
+    phone: '+14508822220',
+    keywords: ['patrick morin', 'patrick', 'morin'],
+  },
+  {
+    id: 'canac_prevost',
+    name: 'Canac',
+    emoji: '🏗️',
+    address: '2450 Bd du Curé-Labelle, Prévost',
+    placeId: 'ChIJ1_Pw2gYvz0wRJ_zZqT28xMw',
+    lat: 45.820526,
+    lng: -74.048584,
+    phone: '+14504386141',
+    keywords: ['canac'],
+  },
+];
+
+// ── STORES STATE ─────────────────────────────────────────────
+let userLat = null;
+let userLng = null;
+let locationStatus = 'idle'; // idle | locating | located | denied
+let detectedStoreIds = new Set(); // store IDs mentioned in latest Gemini result
+let storeHoursCache = {}; // placeId → { open_now, weekday_text, fetched_at }
+
+// Favorites (persisted)
+let favoriteStoreIds = new Set(JSON.parse(localStorage.getItem('dadapp_fav_stores') || '[]'));
+function saveFavs() { localStorage.setItem('dadapp_fav_stores', JSON.stringify([...favoriteStoreIds])); }
+function toggleFav(placeId) {
+  if (favoriteStoreIds.has(placeId)) favoriteStoreIds.delete(placeId);
+  else favoriteStoreIds.add(placeId);
+  saveFavs();
+  renderStores();
+}
+window.toggleFav = toggleFav;
+
+// Custom stores (persisted)
+let customStores = JSON.parse(localStorage.getItem('dadapp_custom_stores') || '[]');
+function saveCustomStores() { localStorage.setItem('dadapp_custom_stores', JSON.stringify(customStores)); }
+
+function showAddStoreModal() {
+  document.getElementById('addStoreName').value = '';
+  document.getElementById('addStoreAddr').value = '';
+  document.getElementById('addStoreModal').classList.add('open');
+}
+function closeAddStoreModal() { document.getElementById('addStoreModal').classList.remove('open'); }
+async function confirmAddStore() {
+  const name = document.getElementById('addStoreName').value.trim();
+  if (!name) { showToast('ENTER A NAME'); return; }
+  const addr = document.getElementById('addStoreAddr').value.trim();
+  showToast('SEARCHING...');
+  // Try Places API to get real placeId + coords + phone
+  try {
+    const res = await fetch(`https://places.googleapis.com/v1/places:searchText?key=${PLACES_API_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.location,places.internationalPhoneNumber' },
+      body: JSON.stringify({
+        textQuery: addr ? `${name} ${addr}` : name,
+        locationBias: userLat ? { circle: { center: { latitude: userLat, longitude: userLng }, radius: 50000 } } : undefined,
+        maxResultCount: 1
+      })
+    });
+    const data = await res.json();
+    const p = data.places?.[0];
+    const store = {
+      id: p?.id || ('custom_' + Date.now()),
+      name: p?.displayName?.text || name,
+      emoji: '📍',
+      address: p?.formattedAddress || addr || name,
+      placeId: p?.id || ('custom_' + Date.now()),
+      lat: p?.location?.latitude || userLat || 46.0697,
+      lng: p?.location?.longitude || userLng || -73.8811,
+      phone: (p?.internationalPhoneNumber || '').replace(/\s/g,'').replace(/[()]/g,'') || null,
+      keywords: [name.toLowerCase()],
+      custom: true,
+    };
+    customStores.push(store);
+    saveCustomStores();
+    closeAddStoreModal();
+    renderStores();
+    showToast('✓ ' + store.name + ' ADDED');
+  } catch(e) {
+    showToast('ERROR: ' + e.message?.slice(0,40));
+  }
+}
+function removeCustomStore(id) {
+  customStores = customStores.filter(s => s.id !== id);
+  saveCustomStores();
+  renderStores();
+}
+window.showAddStoreModal = showAddStoreModal;
+window.closeAddStoreModal = closeAddStoreModal;
+window.confirmAddStore = confirmAddStore;
+window.removeCustomStore = removeCustomStore;
+
+// ── GEOLOCATION ──────────────────────────────────────────────
+function locateMe(silent = false) {
+  if (!navigator.geolocation) {
+    if (!silent) showToast(t('toast_location_err'));
+    return;
+  }
+  locationStatus = 'locating';
+  updateLocateBtn();
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      userLat = pos.coords.latitude;
+      userLng = pos.coords.longitude;
+      locationStatus = 'located';
+      updateLocateBtn();
+      renderStores();
+    },
+    (err) => {
+      locationStatus = err.code === 1 ? 'denied' : 'idle';
+      updateLocateBtn();
+      if (!silent) showToast(err.code === 1 ? t('toast_location_denied') : t('toast_location_err'));
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+}
+
+// Auto-locate on startup so stores sort by real distance immediately
+locateMe(true);
+
+function updateLocateBtn() {
+  const btn = document.getElementById('storesLocateBtn');
+  const lbl = document.getElementById('storesLocateLabel');
+  if (!btn) return;
+  btn.className = 'stores-locate-btn';
+  if (locationStatus === 'locating') {
+    btn.classList.add('locating');
+    lbl.textContent = t('stores_locating');
+  } else if (locationStatus === 'located') {
+    btn.classList.add('located');
+    lbl.textContent = t('stores_located');
+  } else {
+    lbl.textContent = t('stores_locate');
+  }
+}
+
+// ── DISTANCE CALC (Haversine, fully offline) ──────────────────
+function haversineKm(lat1, lng1, lat2, lng2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 +
+            Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
+            Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+// ── GOOGLE PLACES HOURS FETCH ─────────────────────────────────
+// Uses Place Details endpoint with placeId — single targeted call, not a search.
+const PLACES_API_KEY = 'AIzaSyAnAaV0OBrMSKX8Ie_Kl-IpIQh-6Th45nI';
+
+async function fetchStoreHours(store) {
+  // Check cache — valid for 30 minutes
+  const cached = storeHoursCache[store.placeId];
+  if (cached && (Date.now() - cached.fetched_at < 30 * 60 * 1000)) {
+    return cached;
+  }
+
+  try {
+    // Places API v1 — supports CORS natively, no proxy needed
+    const url = `https://places.googleapis.com/v1/places/${store.placeId}?fields=currentOpeningHours,regularOpeningHours&key=${PLACES_API_KEY}`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (data.error) throw new Error(data.error.message || data.error.status);
+
+    const oh = data.currentOpeningHours || data.regularOpeningHours || {};
+    const result = {
+      open_now: oh.openNow ?? null,
+      weekday_text: oh.weekdayDescriptions ?? [],
+      fetched_at: Date.now(),
+    };
+    storeHoursCache[store.placeId] = result;
+    return result;
+  } catch (e) {
+    console.warn('Places API error for', store.name, e);
+    return null;
+  }
+}
+
+// ── KEYWORD MATCHING: cross-reference Gemini detected_stores with favourites ─
+function matchDetectedStores(detectedNames) {
+  detectedStoreIds.clear();
+  if (!detectedNames?.length) return;
+
+  detectedNames.forEach(name => {
+    const lower = name.toLowerCase().trim();
+    favoriteStores.forEach(store => {
+      if (store.keywords.some(kw => lower.includes(kw) || kw.includes(lower))) {
+        detectedStoreIds.add(store.id);
+      }
+    });
+  });
+}
+
+// ── RENDER STORES TAB ─────────────────────────────────────────
+function renderStores() {
+  const el = document.getElementById('storesList');
+  if (!el) return;
+
+  updateLocateBtn();
+
+  if (!favoriteStores.length) {
+    el.innerHTML = `<div class="stores-empty">${escHtml(t('stores_empty')).replace('\n','<br>')}</div>`;
+    return;
+  }
+
+  // Merge base + custom stores
+  const existingIds = new Set(favoriteStores.map(s => s.placeId));
+  const allStores = [...favoriteStores, ...customStores.filter(s => !existingIds.has(s.placeId))];
+
+  // Sort: favourites first, then detected, then by distance
+  const sorted = [...allStores].sort((a, b) => {
+    const aFav = favoriteStoreIds.has(a.placeId) ? 0 : 1;
+    const bFav = favoriteStoreIds.has(b.placeId) ? 0 : 1;
+    if (aFav !== bFav) return aFav - bFav;
+
+    const aDetected = detectedStoreIds.has(a.id) ? 0 : 1;
+    const bDetected = detectedStoreIds.has(b.id) ? 0 : 1;
+    if (aDetected !== bDetected) return aDetected - bDetected;
+
+    if (userLat !== null) {
+      const dA = haversineKm(userLat, userLng, a.lat, a.lng);
+      const dB = haversineKm(userLat, userLng, b.lat, b.lng);
+      return dA - dB;
+    }
+    return 0;
+  });
+
+  // Find nearest store (for badge)
+  let nearestId = null;
+  if (userLat !== null && sorted.length) {
+    nearestId = sorted.reduce((best, s) => {
+      const dB = haversineKm(userLat, userLng, best.lat, best.lng);
+      const dS = haversineKm(userLat, userLng, s.lat, s.lng);
+      return dS < dB ? s : best;
+    }).id;
+  }
+
+  el.innerHTML = sorted.map(store => {
+    const isDetected = detectedStoreIds.has(store.id);
+    const isNearest  = store.id === nearestId;
+    const dist = userLat !== null
+      ? haversineKm(userLat, userLng, store.lat, store.lng).toFixed(1)
+      : null;
+
+    const cached = storeHoursCache[store.placeId];
+
+    function hoursHtml(c, id) {
+      if (!c) return `<span class="store-hours-badge loading" ${id ? `id="hours-${id}"` : ''}>⏳ ${t('stores_hours_loading')}</span>`;
+      const today = new Date().getDay(); // 0=Sun
+      const todayText = c.weekday_text?.[(today + 6) % 7] || ''; // weekday_text is Mon-Sun
+      const todayHours = todayText ? todayText.replace(/^[^:]+:\s*/,'') : '';
+      if (c.open_now === true)  return `<span class="store-hours-badge open" ${id ? `id="hours-${id}"` : ''}>✓ ${t('stores_open')}${todayHours ? ' · ' + todayHours : ''}</span>`;
+      if (c.open_now === false) return `<span class="store-hours-badge closed" ${id ? `id="hours-${id}"` : ''}>✗ ${t('stores_closed')}${todayHours ? ' · ' + todayHours : ''}</span>`;
+      return `<span class="store-hours-badge loading" ${id ? `id="hours-${id}"` : ''}>${t('stores_hours_unavail')}</span>`;
+    }
+
+    let hoursBadge = cached === undefined
+      ? `<span class="store-hours-badge loading" id="hours-${store.id}">⏳ ${t('stores_hours_loading')}</span>`
+      : hoursHtml(cached, store.id);
+
+    const distBadge = dist !== null
+      ? `<span class="store-distance-badge ${isNearest ? 'nearest' : ''}">
+           ${isNearest ? '★ ' + t('stores_nearest') + ' · ' : ''}${dist} ${t('stores_km')}
+         </span>`
+      : '';
+
+    // Use lat,lng directly — most reliable, opens exact pin on all devices
+    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${store.lat},${store.lng}&query_place_id=${store.placeId}`;
+    const wazeUrl = `https://waze.com/ul?ll=${store.lat},${store.lng}&navigate=yes`;
+
+    const isFav = favoriteStoreIds.has(store.placeId);
+    const isCustom = store.custom === true;
+
+    return `
+      <div class="store-card ${isDetected ? 'detected' : ''}">
+        <div class="store-detected-ribbon">${t('stores_detected_ribbon')}</div>
+        <div class="store-card-body">
+          <div class="store-icon-zone" onclick="toggleFav('${store.placeId}')" style="cursor:pointer;" title="Favourite">
+            ${isFav ? '⭐' : store.emoji}
+          </div>
+          <div class="store-info">
+            <div class="store-name">${escHtml(store.name)}</div>
+            <div class="store-address">${escHtml(store.address)}</div>
+            <div class="store-meta">
+              ${distBadge}
+              ${hoursBadge}
+            </div>
+          </div>
+          <div class="store-actions">
+            <a class="store-map-btn" href="${mapsUrl}" target="_blank" rel="noopener">
+              <span class="store-map-icon">🗺️</span>
+              <span>MAP</span>
+            </a>
+            <a class="store-map-btn" href="${wazeUrl}" target="_blank" rel="noopener" style="border-top:var(--border);">
+              <span class="store-map-icon">🚗</span>
+              <span>WAZE</span>
+            </a>
+            ${store.phone ? `<a class="store-map-btn store-call-btn" href="tel:${store.phone}" style="border-top:var(--border);">
+              <span class="store-map-icon">📞</span>
+              <span>CALL</span>
+            </a>` : ''}
+          </div>
+        </div>
+        <div class="store-expand-row" style="display:flex;gap:0;">
+          <button class="store-expand-btn" style="flex:1;" onclick="event.stopPropagation();expandBranches('${escHtml(store.name)}')">
+            📍 ${t('stores_expand_branches')}
+          </button>
+          ${isCustom ? `<button class="store-expand-btn" style="color:var(--red,#c0392b);border-left:var(--border);" onclick="removeCustomStore('${store.id}')">🗑️ REMOVE</button>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+
+  // Kick off Places API fetches for any store not yet cached
+  sorted.forEach(store => {
+    if (storeHoursCache[store.placeId] === undefined) {
+      storeHoursCache[store.placeId] = null; // mark as in-flight
+      fetchStoreHours(store).then(result => {
+        storeHoursCache[store.placeId] = result;
+        const badge = document.getElementById(`hours-${store.id}`);
+        if (badge) {
+          const today = new Date().getDay();
+          const todayText = result?.weekday_text?.[(today + 6) % 7] || '';
+          const todayHours = todayText ? todayText.replace(/^[^:]+:\s*/,'') : '';
+          if (!result) {
+            badge.outerHTML = `<span class="store-hours-badge loading">${t('stores_hours_unavail')}</span>`;
+          } else if (result.open_now === true) {
+            badge.outerHTML = `<span class="store-hours-badge open">✓ ${t('stores_open')}${todayHours ? ' · ' + todayHours : ''}</span>`;
+          } else if (result.open_now === false) {
+            badge.outerHTML = `<span class="store-hours-badge closed">✗ ${t('stores_closed')}${todayHours ? ' · ' + todayHours : ''}</span>`;
+          } else {
+            badge.outerHTML = `<span class="store-hours-badge loading">${t('stores_hours_unavail')}</span>`;
+          }
+        }
+      });
+    }
+  });
+}
+
+// ── CONFIG ─────────────────────────────────────────────────
+// GEMINI_API_KEY read at call time (DAD_CONFIG loaded async)
+function getGeminiKey() { return window.DAD_CONFIG?.GEMINI_API_KEY || ''; }
+const GEMINI_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+
+
+// ── EXPAND BRANCHES (Phase 9) ─────────────────────────────
+async function expandBranches(storeName) {
+  if (userLat === null) { showToast('LOCATE FIRST'); return; }
+  showToast('SEARCHING ' + storeName.toUpperCase() + '...');
+  try {
+    // Places API v1 Text Search — CORS supported natively
+    const res = await fetch(`https://places.googleapis.com/v1/places:searchText?key=${PLACES_API_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.location,places.nationalPhoneNumber,places.internationalPhoneNumber' },
+      body: JSON.stringify({
+        textQuery: storeName,
+        locationBias: { circle: { center: { latitude: userLat, longitude: userLng }, radius: 50000 } },
+        maxResultCount: 10
+      })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    const existingIds = new Set(favoriteStores.map(s => s.placeId));
+    const newBranches = (data.places || []).filter(p => !existingIds.has(p.id));
+    if (!newBranches.length) { showToast('NO NEW BRANCHES FOUND'); return; }
+    newBranches.forEach(p => {
+      // Convert international phone to dialable format
+      const phone = (p.internationalPhoneNumber || '').replace(/\s/g, '').replace(/[()]/g, '') || null;
+      favoriteStores.push({
+        id: p.id, name: p.displayName?.text || storeName, emoji: '📍',
+        address: p.formattedAddress || '', placeId: p.id,
+        lat: p.location?.latitude || userLat, lng: p.location?.longitude || userLng,
+        phone,
+        keywords: [storeName.toLowerCase()]
+      });
+      detectedStoreIds.add(p.id);
+    });
+    renderStores();
+    showToast('+' + newBranches.length + ' LOCATIONS FOUND');
+  } catch(err) { console.error(err); showToast('SEARCH ERROR: ' + err.message?.slice(0,60)); }
+}
+window.expandBranches = expandBranches;
+
+// ── CAPACITOR BRIDGE ───────────────────────────────────────
+window.addEventListener('message', function(event) {
+  if (event.data && event.data.type === 'MUM_CALL_ENDED') {
+    showToast(t('toast_mum_call'));
+    openRecorder();
+    setTimeout(() => startRecording(), 600);
+  }
+});
+window.dadApp = {
+  onMumCallEnded: function() {
+    window.dispatchEvent(new MessageEvent('message', { data: { type: 'MUM_CALL_ENDED' } }));
+  },
+  getApiKey: function() { return GEMINI_API_KEY; }
+};
+
+// ── INIT ───────────────────────────────────────────────────
+// Set correct active lang button
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.classList.toggle('active', btn.textContent === uiLang.toUpperCase());
+});
+applyI18n();
+renderAll();
+
+// ═══════════════════════════════════════════════════════════
+// PHASE 6 — SETTINGS TAB
+// ═══════════════════════════════════════════════════════════
+
+// ── APP CONFIG — declared early, populated below ─────────────
+// (moved to top of script — see PHASE 6 section for full declaration)
+
+function saveAppConfig() {
+  localStorage.setItem('dadapp_showCallPopup', JSON.stringify(appConfig.showCallPopup));
+}
+
+/**
+ * Capacitor bridge placeholder.
+ * Native Android (CallMonitorPlugin) reads these Capacitor Preferences
+ * keys to decide whether to show the overlay after a call ends.
+ * Replace the console.log body with real Capacitor Preferences calls
+ * when running inside the APK:
+ *
+ *   import { Preferences } from '@capacitor/preferences';
+ *   await Preferences.set({ key, value: String(value) });
+ */
+function syncSettingToNativeAndroid(key, value) {
+  console.log(`[CapacitorBridge] Preferences.set("${key}", "${value}")`);
+  // In APK context, replace with:
+  // Preferences.set({ key, value: String(value) });
+}
+
+// ── SETTINGS EVENT HANDLERS ──────────────────────────────────
+
+function onSettingToggleChange(checkbox) {
+  appConfig.showCallPopup = checkbox.checked;
+  saveAppConfig();
+  syncSettingToNativeAndroid('showCallPopup', checkbox.checked);
+  showToast(t('toast_setting_saved'));
+}
+
+function onSettingLang(lang) {
+  setUiLang(lang);         // existing Phase 4 function: saves, updates switcher, re-renders
+  syncSettingToNativeAndroid('uiLang', lang);
+  showToast(t('toast_setting_saved'));
+}
+
+// ── RENDER SETTINGS TAB ──────────────────────────────────────
+
+// ── THEME SYSTEM ────────────────────────────────────────────
+
+
+function applyTheme(theme) {
+  appConfig.theme = theme;
+  localStorage.setItem('dadapp_theme', theme);
+  document.documentElement.setAttribute('data-theme', theme === 'default' ? '' : theme);
+  syncSettingToNativeAndroid('theme', theme);
+}
+
+function onSettingTheme(theme) {
+  applyTheme(theme);
+  renderSettings();
+  showToast(t('toast_theme_saved'));
+}
+
+// ── BIG MODE ─────────────────────────────────────────────────
+
+function applyBigMode(enabled) {
+  appConfig.bigMode = enabled;
+  localStorage.setItem('dadapp_bigMode', JSON.stringify(enabled));
+  document.documentElement.setAttribute('data-big', enabled ? '1' : '0');
+  syncSettingToNativeAndroid('bigMode', enabled);
+}
+
+function onSettingBigMode(checkbox) {
+  applyBigMode(checkbox.checked);
+  showToast(t(checkbox.checked ? 'toast_bigmode_on' : 'toast_bigmode_off'));
+}
+
+// ── RENDER SETTINGS TAB ──────────────────────────────────────
+
+function renderSettings() {
+  // Call popup toggle
+  const toggle = document.getElementById('settingCallPopup');
+  if (toggle) toggle.checked = appConfig.showCallPopup;
+
+  // Lang buttons
+  ['en', 'fr', 'pl'].forEach(lang => {
+    const btn = document.getElementById('sLang' + lang.charAt(0).toUpperCase() + lang.slice(1));
+    if (btn) btn.classList.toggle('active', lang === uiLang);
+  });
+
+  // Theme buttons
+  THEMES.forEach(theme => {
+    const id = 'theme' + theme.charAt(0).toUpperCase() + theme.slice(1);
+    const btn = document.getElementById(id);
+    if (btn) btn.classList.toggle('active', (appConfig.theme || 'default') === theme);
+  });
+
+  // Big mode toggle
+  const bigToggle = document.getElementById('settingBigMode');
+  if (bigToggle) bigToggle.checked = !!appConfig.bigMode;
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// PHASE 8 — FIREBASE: BRING LIST + SHARED LEDGER
+// ═══════════════════════════════════════════════════════════
+
+window._bringDocs  = [];
+window._ledgerDocs = [];
+
+// ── BRING LIST ───────────────────────────────────────────────
+
+window.renderBring = function() {
+  const el = document.getElementById('bringList');
+  if (!el) return;
+  const docs = window._bringDocs.filter(x => !x.deleted);
+  if (!docs.length) {
+    el.innerHTML = `<div class="empty-state">${escHtml(t('bring_empty')).replace('\n','<br>')}</div>`;
+    return;
+  }
+  const unpacked = docs.filter(x => !x.packed);
+  const packed   = docs.filter(x => x.packed);
+
+  let html = '';
+  unpacked.forEach(item => {
+    html += bringItemHTML(item);
+  });
+  if (packed.length) {
+    html += `<div class="done-divider"><div class="done-divider-line"></div>
+      <div class="done-divider-label">${t('bring_packed')} (${packed.length})</div>
+      <div class="done-divider-line"></div></div>`;
+    packed.forEach(item => { html += bringItemHTML(item); });
+  }
+  el.innerHTML = html;
+
+  // Re-apply i18n to bring input/button
+  const inp = document.getElementById('bringInput');
+  if (inp) inp.placeholder = t('bring_input_placeholder');
+  const btn = el.closest('.view')?.querySelector('[data-i18n-btn="btn_bring_add"]');
+  if (btn) btn.textContent = t('btn_bring_add');
+};
+
+function bringItemHTML(item) {
+  const cls = item.packed ? 'bring-item packed' : 'bring-item';
+  const check = item.packed ? '✓' : '';
+  return `<div class="${cls}" onclick="bringToggle('${item.id}')">
+    <div class="bring-check-zone">${check}</div>
+    <div class="bring-item-text">${escHtml(item.text)}</div>
+    <button class="bring-delete" onclick="event.stopPropagation();bringDelete('${item.id}')" title="Delete">✕</button>
+  </div>`;
+}
+
+async function bringAdd() {
+  const inp = document.getElementById('bringInput');
+  const text = inp?.value.trim();
+  if (!text) return;
+  const fb = window._fb;
+  if (!fb) { showToast('Firebase not ready'); return; }
+  try {
+    await fb.addDoc(fb.collection(fb.db, 'bringlist'), {
+      text,
+      packed: false,
+      createdAt: fb.serverTimestamp(),
+      addedBy: 'user'
+    });
+    inp.value = '';
+  } catch(e) { showToast('Error: ' + e.message); }
+}
+window.bringAdd = bringAdd;
+
+async function bringToggle(id) {
+  const fb = window._fb;
+  if (!fb) return;
+  const item = window._bringDocs.find(x => x.id === id);
+  if (!item) return;
+  try {
+    await fb.updateDoc(fb.doc(fb.db, 'bringlist', id), { packed: !item.packed });
+  } catch(e) { console.error(e); }
+}
+window.bringToggle = bringToggle;
+
+async function bringDelete(id) {
+  const fb = window._fb;
+  if (!fb) return;
+  try {
+    // Soft delete: mark as deleted (Firestore free tier — avoid delete ops)
+    await fb.updateDoc(fb.doc(fb.db, 'bringlist', id), { deleted: true, packed: true });
+    // Filter out from local cache immediately
+    window._bringDocs = window._bringDocs.filter(x => x.id !== id || !x.deleted);
+    window.renderBring();
+  } catch(e) { console.error(e); }
+}
+window.bringDelete = bringDelete;
+
+// ── SHARED LEDGER ────────────────────────────────────────────
+
+window.renderLedger = function() {
+  const el = document.getElementById('ledgerList');
+  const summaryEl = document.getElementById('ledgerSummary');
+  if (!el) return;
+
+  const docs = window._ledgerDocs.filter(x => !x.deleted);
+  const unsettled = docs.filter(x => !x.settled);
+
+  // Calculate balance: positive = he owes me, negative = I owe him
+  let balance = 0;
+  unsettled.forEach(item => {
+    if (item.paidBy === 'me')  balance += item.amount;
+    if (item.paidBy === 'him') balance -= item.amount;
+  });
+
+  // Summary card
+  if (summaryEl) {
+    const absAmt = Math.abs(balance).toFixed(2);
+    if (balance > 0.01)       summaryEl.textContent = t('ledger_owes_you', absAmt);
+    else if (balance < -0.01) summaryEl.textContent = t('ledger_you_owe', absAmt);
+    else                      summaryEl.textContent = t('ledger_settled');
+  }
+
+  if (!docs.length) {
+    el.innerHTML = `<div class="empty-state">${escHtml(t('ledger_empty')).replace('\n','<br>')}</div>`;
+    return;
+  }
+
+  el.innerHTML = docs.map(item => {
+    const paidLabel = item.paidBy === 'me' ? t('ledger_paid_by_me') : t('ledger_paid_by_him');
+    const date = item.createdAt?.toDate
+      ? item.createdAt.toDate().toLocaleDateString('en-CA', { month:'short', day:'numeric' }).toUpperCase()
+      : '';
+    const settledCls = item.settled ? ' settled' : '';
+    const settleBtn = !item.settled
+      ? `<button class="ledger-settle-btn" onclick="ledgerSettle('${item.id}')">${t('ledger_settle')}</button>`
+      : '';
+    return `<div class="ledger-item${settledCls}">
+      <div class="ledger-item-info">
+        <span class="ledger-item-desc">${escHtml(item.desc)}</span>
+        <span class="ledger-item-meta">${paidLabel} · ${date}</span>
+      </div>
+      <div class="ledger-item-amount">$${Number(item.amount).toFixed(2)}</div>
+      ${settleBtn}
+    </div>`;
+  }).join('');
+
+  // Re-apply i18n
+  const descInp = document.getElementById('ledgerDesc');
+  if (descInp) descInp.placeholder = t('ledger_desc_placeholder');
+  const addBtn = el.closest('.view')?.querySelector('[data-i18n-btn="btn_ledger_add"]');
+  if (addBtn) addBtn.textContent = t('btn_ledger_add');
+};
+
+async function ledgerAdd() {
+  const desc   = document.getElementById('ledgerDesc')?.value.trim();
+  const amount = parseFloat(document.getElementById('ledgerAmount')?.value);
+  const paidBy = document.getElementById('ledgerPaidBy')?.value;
+  if (!desc)        { showToast(t('ledger_desc_placeholder')); return; }
+  if (isNaN(amount) || amount <= 0) { showToast('$?'); return; }
+  const fb = window._fb;
+  if (!fb) { showToast('Firebase not ready'); return; }
+  try {
+    await fb.addDoc(fb.collection(fb.db, 'ledger'), {
+      desc, amount, paidBy,
+      settled: false,
+      createdAt: fb.serverTimestamp()
+    });
+    document.getElementById('ledgerDesc').value   = '';
+    document.getElementById('ledgerAmount').value = '';
+  } catch(e) { showToast('Error: ' + e.message); }
+}
+window.ledgerAdd = ledgerAdd;
+
+async function ledgerSettle(id) {
+  const fb = window._fb;
+  if (!fb) return;
+  try {
+    await fb.updateDoc(fb.doc(fb.db, 'ledger', id), { settled: true });
+  } catch(e) { console.error(e); }
+}
+window.ledgerSettle = ledgerSettle;
+
+// Expose t() to global scope so Firebase module script can access it
+window.t = t;
+
+// ── PHASE 7 BOOT: apply persisted theme + big mode ──────────
+applyTheme(appConfig.theme);
+applyBigMode(appConfig.bigMode);
+window.t = t; // expose for Firebase module
+
+// ── PWA: Service Worker + Install Prompt ─────────────────────
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js')
+    .then(() => console.log('[SW] Registered'))
+    .catch(e => console.log('[SW] Error', e));
+}
+
+let _pwaPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  _pwaPrompt = e;
+  const btn = document.getElementById('pwaInstallBtn');
+  if (btn) btn.style.display = 'flex';
+});
+
+function pwaInstall() {
+  if (!_pwaPrompt) return;
+  _pwaPrompt.prompt();
+  _pwaPrompt.userChoice.then(() => {
+    _pwaPrompt = null;
+    const btn = document.getElementById('pwaInstallBtn');
+    if (btn) btn.style.display = 'none';
+  });
+}
+
+</script>
+</body>
+</html>
