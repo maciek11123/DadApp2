@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>DAD APP</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap');
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -27,7 +27,7 @@
     --green: #00C853;
     --shadow: 4px 4px 0px #000000;
     --border: 3px solid #000000;
-    --font: 'Space Mono', 'Courier New', monospace;
+    --font: 'Atkinson Hyperlegible', 'Arial', sans-serif;
 
     /* Semantic theme tokens */
     --bg:        var(--yellow);
@@ -128,7 +128,8 @@
   [data-big="1"] .item-label { font-size: 20px !important; letter-spacing: 0.04em; }
   [data-big="1"] .btn { font-size: 17px !important; padding: 18px 20px !important; min-height: 64px; }
   [data-big="1"] .note-item { padding: 18px 16px !important; }
-  [data-big="1"] .note-title { font-size: 18px !important; }
+  [data-big="1"] .note-item-title { font-size: 18px !important; }
+  [data-big="1"] .note-item-preview { font-size: 14px !important; }
   [data-big="1"] .store-name { font-size: 22px !important; }
   [data-big="1"] .store-address { font-size: 13px !important; }
   [data-big="1"] .store-icon-zone { font-size: 36px !important; width: 76px !important; }
@@ -137,6 +138,54 @@
   [data-big="1"] .tts-read-all-btn { font-size: 17px !important; min-height: 64px !important; }
   [data-big="1"] #pageHeader { font-size: 28px !important; letter-spacing: 0.08em; }
   [data-big="1"] .title-input { font-size: 18px !important; padding: 16px !important; }
+  [data-big="1"] .tp-transcription-text { font-size: 18px !important; line-height: 1.8; }
+  [data-big="1"] .ledger-item-desc { font-size: 18px !important; }
+  [data-big="1"] .ledger-item-meta { font-size: 14px !important; }
+  [data-big="1"] .ledger-item-amount { font-size: 22px !important; }
+  [data-big="1"] .ledger-summary { font-size: 24px !important; }
+  [data-big="1"] .bring-item-text { font-size: 22px !important; }
+  [data-big="1"] .bill-name { font-size: 18px !important; }
+  [data-big="1"] .bill-amount { font-size: 18px !important; }
+  [data-big="1"] .modal-title { font-size: 20px !important; }
+  [data-big="1"] .rec-status { font-size: 15px !important; }
+
+  /* ── HUGE MODE (data-big=2) ── */
+  [data-big="2"] {
+    --fs-xs:  16px;
+    --fs-sm:  20px;
+    --fs-md:  24px;
+    --fs-lg:  29px;
+    --fs-xl:  34px;
+    --fs-2xl: 42px;
+    --fs-3xl: 54px;
+    --fs-nav: 15px;
+  }
+  [data-big="2"] .nav-icon { font-size: 36px !important; }
+  [data-big="2"] .nav-btn  { padding: 16px 4px 20px !important; min-height: 90px; gap: 8px; }
+  [data-big="2"] .list-item { min-height: 120px; }
+  [data-big="2"] .item-check-zone { min-height: 120px; width: 100px; }
+  [data-big="2"] .item-label { font-size: 26px !important; }
+  [data-big="2"] .btn { font-size: 22px !important; padding: 22px 20px !important; min-height: 76px; }
+  [data-big="2"] .note-item { padding: 22px 18px !important; }
+  [data-big="2"] .note-item-title { font-size: 22px !important; }
+  [data-big="2"] .note-item-preview { font-size: 17px !important; }
+  [data-big="2"] .store-name { font-size: 26px !important; }
+  [data-big="2"] .store-icon-zone { font-size: 44px !important; width: 90px !important; }
+  [data-big="2"] .tts-read-all-btn { font-size: 22px !important; min-height: 76px !important; }
+  [data-big="2"] #pageHeader { font-size: 34px !important; }
+  [data-big="2"] .title-input { font-size: 22px !important; padding: 20px !important; }
+  [data-big="2"] .tp-transcription-text { font-size: 22px !important; line-height: 1.9; }
+  [data-big="2"] .ledger-item-desc { font-size: 22px !important; }
+  [data-big="2"] .ledger-item-meta { font-size: 17px !important; }
+  [data-big="2"] .ledger-item-amount { font-size: 28px !important; }
+  [data-big="2"] .ledger-summary { font-size: 30px !important; }
+  [data-big="2"] .bring-item-text { font-size: 28px !important; }
+  [data-big="2"] .bring-item { min-height: 90px; }
+  [data-big="2"] .bring-check-zone { min-height: 90px; width: 80px; }
+  [data-big="2"] .bill-name { font-size: 22px !important; }
+  [data-big="2"] .bill-amount { font-size: 22px !important; }
+  [data-big="2"] .modal-title { font-size: 26px !important; }
+  [data-big="2"] .ledger-settle-btn { font-size: 16px !important; padding: 14px 16px !important; }
 
   html, body {
     height: 100%;
@@ -1407,7 +1456,6 @@
         <div class="card-actions">
           <button class="btn btn-blue" id="btnSaveNote" onclick="saveNote()"></button>
           <button class="btn btn-pink" id="btnRecAudio" onclick="openRecorder()"></button>
-          <button class="btn" style="background:var(--black);color:var(--bg);flex-shrink:0;padding:0 14px;font-size:11px;" onclick="cubeImport()" title="Import from CubeACR">📂 CUBE</button>
         </div>
       </div>
 
@@ -1469,21 +1517,6 @@
     <div class="view" id="view-settings">
       <div class="settings-card">
 
-        <!-- TOGGLE ROW: Show Pop-up After Calls -->
-        <div class="settings-row">
-          <div class="settings-row-label">
-            <span class="settings-row-icon">📞</span>
-            <span data-i18n="settings_popup_label"></span>
-          </div>
-          <label class="nb-toggle" title="Show pop-up after calls">
-            <input type="checkbox" id="settingCallPopup" onchange="onSettingToggleChange(this)">
-            <span class="nb-toggle-track">
-              <span class="nb-toggle-thumb"></span>
-            </span>
-          </label>
-        </div>
-
-        <div class="settings-divider"></div>
 
         <!-- LANGUAGE ROW -->
         <div class="settings-row settings-row-lang">
@@ -1516,20 +1549,67 @@
         <div class="settings-divider"></div>
 
         <!-- BIG MODE ROW -->
-        <div class="settings-row">
+        <div class="settings-row" style="flex-direction:column;align-items:stretch;gap:14px;padding-bottom:22px;">
           <div class="settings-row-label">
             <span class="settings-row-icon">🔠</span>
             <span data-i18n="settings_bigmode_label"></span>
           </div>
-          <label class="nb-toggle" title="Big mode">
-            <input type="checkbox" id="settingBigMode" onchange="onSettingBigMode(this)">
-            <span class="nb-toggle-track">
-              <span class="nb-toggle-thumb"></span>
-            </span>
-          </label>
+          <div style="display:flex;gap:0;border:3px solid var(--black);box-shadow:3px 3px 0 var(--black);">
+            <button id="bigModeNormal" onclick="onSettingBigMode(0)"
+              style="flex:1;font-family:var(--font);font-size:13px;font-weight:700;letter-spacing:0.06em;padding:16px 4px;border:none;border-right:3px solid var(--black);background:var(--white);color:var(--black);cursor:pointer;">
+              A<br><span style="font-size:10px;opacity:0.6;">NORMAL</span>
+            </button>
+            <button id="bigModeBig" onclick="onSettingBigMode(1)"
+              style="flex:1;font-family:var(--font);font-size:16px;font-weight:700;letter-spacing:0.06em;padding:16px 4px;border:none;border-right:3px solid var(--black);background:var(--white);color:var(--black);cursor:pointer;">
+              A<br><span style="font-size:10px;opacity:0.6;">BIG</span>
+            </button>
+            <button id="bigModeHuge" onclick="onSettingBigMode(2)"
+              style="flex:1;font-family:var(--font);font-size:20px;font-weight:700;letter-spacing:0.06em;padding:16px 4px;border:none;background:var(--white);color:var(--black);cursor:pointer;">
+              A<br><span style="font-size:10px;opacity:0.6;">HUGE</span>
+            </button>
+          </div>
         </div>
 
       </div><!-- /settings-card -->
+
+      <!-- FIREFOX INSTALL GUIDE -->
+      <div class="settings-card" id="firefoxInstallCard" style="display:none;">
+        <div class="settings-row" style="flex-direction:column;align-items:stretch;gap:14px;padding-bottom:22px;">
+          <div class="settings-row-label">
+            <span class="settings-row-icon">🦊</span>
+            <span style="font-weight:700;font-size:var(--fs-sm);letter-spacing:0.06em;text-transform:uppercase;">INSTALL ON FIREFOX</span>
+          </div>
+          <div style="font-size:var(--fs-sm);color:var(--text-muted);line-height:1.7;">
+            1. Tap the <strong>⋮ menu</strong> (top right)<br>
+            2. Tap <strong>Install</strong><br>
+            3. Tap <strong>Add automatically</strong><br>
+            The app icon will appear on your home screen.
+          </div>
+          <div style="background:var(--yellow);border:2px dashed var(--black);padding:12px 14px;font-size:var(--fs-xs);letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">
+            Already installed? Long-press the icon → open as app.
+          </div>
+        </div>
+      </div>
+
+      <!-- CUBEACR IMPORT -->
+      <div class="settings-card" style="margin-top:14px;">
+        <div class="settings-row" style="flex-direction:column;align-items:stretch;gap:12px;">
+          <div class="settings-row-label">
+            <span class="settings-row-icon">📞</span>
+            <span style="font-weight:700;letter-spacing:0.06em;text-transform:uppercase;font-size:var(--fs-sm);">CUBE ACR</span>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.04em;line-height:1.5;">
+            Import call recordings from CubeACR into your notes. Pick the CubeACR folder once — the app remembers it.
+          </div>
+          <button class="btn" style="background:var(--black);color:var(--bg);width:100%;font-size:13px;" onclick="cubePickFolder()">
+            📁 SELECT CUBEACR FOLDER
+          </button>
+          <button class="btn btn-blue" style="width:100%;font-size:13px;" onclick="cubeImport()" id="cubeImportBtn">
+            ⬇️ IMPORT NEW RECORDINGS
+          </button>
+          <div id="cubeStatus" style="font-size:11px;color:var(--text-muted);letter-spacing:0.04em;min-height:16px;"></div>
+        </div>
+      </div>
 
       <!-- INSTALL BUTTON -->
       <button id="pwaInstallBtn" onclick="pwaInstall()" style="display:none;width:100%;padding:18px;background:var(--black);color:var(--bg);border:var(--border);font-family:var(--font);font-size:var(--fs-md);font-weight:700;letter-spacing:0.08em;cursor:pointer;margin-bottom:16px;align-items:center;justify-content:center;gap:10px;">
@@ -1569,8 +1649,8 @@
         <div style="display:flex;gap:10px;margin-bottom:10px;">
           <input class="title-input" id="ledgerAmount" type="number" placeholder="$0.00" step="0.01" style="flex:1;">
           <select class="title-input" id="ledgerPaidBy" style="flex:1;cursor:pointer;">
-              <option value="me" data-i18n-opt="ledger_paid_by_me"></option>
-              <option value="him" data-i18n-opt="ledger_paid_by_him"></option>
+              <option value="me" data-i18n-opt="ledger_paid_by_me">Maciek paid</option>
+              <option value="him" data-i18n-opt="ledger_paid_by_him">Da paid</option>
             </select>
         </div>
         <button class="btn btn-blue" style="width:100%;" onclick="ledgerAdd()" data-i18n-btn="btn_ledger_add"></button>
@@ -1883,12 +1963,12 @@ const I18N = {
     ledger_desc_placeholder: 'DESCRIPTION...',
     btn_ledger_add: '+ Ajouter Dépense',
     ledger_empty: 'AUCUNE DÉPENSE.\nAJOUTEZ-EN UNE CI-DESSOUS.',
-    ledger_owes_you: (amt) => `IL VOUS DOIT $${amt}`,
-    ledger_you_owe: (amt) => `VOUS DEVEZ $${amt}`,
+    ledger_owes_you: (amt) => `DA DOIT $${amt} À MACIEK`,
+    ledger_you_owe: (amt) => `MACIEK DOIT $${amt} À DA`,
     ledger_settled: 'COMPTES RÉGLÉS ✓',
     ledger_settle: 'RÉGLER',
-    ledger_paid_by_me: 'Payé par moi',
-    ledger_paid_by_him: 'Payé par lui',
+    ledger_paid_by_me: 'Payé par Maciek',
+    ledger_paid_by_him: 'Payé par Da',
     aisle_produce:   'FRUITS & LÉGUMES',
     aisle_dairy:     'PRODUITS LAITIERS',
     aisle_meat:      'VIANDES',
@@ -2027,12 +2107,12 @@ const I18N = {
     ledger_desc_placeholder: 'OPIS...',
     btn_ledger_add: '+ Dodaj Wydatek',
     ledger_empty: 'BRAK WYDATKÓW.\nDODAJ PONIŻEJ.',
-    ledger_owes_you: (amt) => `ON CI WINIEN $${amt}`,
-    ledger_you_owe: (amt) => `JESTEŚ WINIEN $${amt}`,
+    ledger_owes_you: (amt) => `DA WINIEN $${amt} MAĆKOWI`,
+    ledger_you_owe: (amt) => `MACIEK WINIEN $${amt} DADOWI`,
     ledger_settled: 'ROZLICZONE ✓',
     ledger_settle: 'ROZLICZ',
-    ledger_paid_by_me: 'Zapłaciłem',
-    ledger_paid_by_him: 'Zapłacił on',
+    ledger_paid_by_me: 'Zapłacił Maciek',
+    ledger_paid_by_him: 'Zapłacił Da',
     aisle_produce:   'OWOCE I WARZYWA',
     aisle_dairy:     'NABIAŁ',
     aisle_meat:      'MIĘSO',
@@ -2172,12 +2252,12 @@ const I18N = {
     ledger_desc_placeholder: 'DESCRIPTION...',
     btn_ledger_add: '+ Add Expense',
     ledger_empty: 'NO EXPENSES YET.\nADD ONE BELOW.',
-    ledger_owes_you: (amt) => `HE OWES YOU $${amt}`,
-    ledger_you_owe: (amt) => `YOU OWE $${amt}`,
+    ledger_owes_you: (amt) => `DA OWES MACIEK $${amt}`,
+    ledger_you_owe: (amt) => `MACIEK OWES DA $${amt}`,
     ledger_settled: 'ALL SETTLED ✓',
     ledger_settle: 'SETTLE UP',
-    ledger_paid_by_me: 'Paid by me',
-    ledger_paid_by_him: 'Paid by him',
+    ledger_paid_by_me: 'Maciek paid',
+    ledger_paid_by_him: 'Da paid',
     aisle_produce:   'PRODUCE',
     aisle_dairy:     'DAIRY',
     aisle_meat:      'MEAT',
@@ -2198,9 +2278,8 @@ const I18N = {
 
 // ── APP CONFIG (persistent, Capacitor-bridgeable) ────────────
 const appConfig = {
-  showCallPopup: JSON.parse(localStorage.getItem('dadapp_showCallPopup') ?? 'true'),
   theme:   localStorage.getItem('dadapp_theme')   || 'default',
-  bigMode: JSON.parse(localStorage.getItem('dadapp_bigMode') ?? 'false'),
+  bigMode: parseInt(localStorage.getItem('dadapp_bigMode') ?? '0', 10) || 0,
 };
 
 const THEMES = ['default', 'warm', 'bw'];
@@ -2813,18 +2892,24 @@ async function sendToGemini() {
                      : mimeType.includes('webm') ? 'audio/webm'
                      : 'audio/webm';
 
-    const systemPrompt = `You are a transcription assistant for a bilingual family app used by a French-Canadian father.
-Audio notes are spoken in Polish (pl), French (fr), or English (en).
+    const systemPrompt = `You are a STRICT transcription assistant for a family shopping app. The speaker is a French-Canadian father who speaks Polish, French, and English.
 
-Analyze the audio and return ONLY a valid JSON object with NO preamble, NO markdown, NO backticks.
+CRITICAL ANTI-HALLUCINATION RULES — follow these above all else:
+- NEVER invent, guess, or add words that were not clearly spoken.
+- If a word is unclear or inaudible, write [unclear] — do NOT substitute a similar-sounding word.
+- NEVER add grocery items, store names, or ANY content that was not explicitly spoken.
+- If the audio contains silence, background noise, or no speech, set transcription to "" and all arrays to [].
+- The transcription must be a verbatim, word-for-word copy of what was said — nothing more.
+- Only extract list_items that are unmistakably spoken as things to buy or bring. If in doubt, omit it.
 
-Required JSON structure:
+Return ONLY a valid JSON object. No preamble, no markdown, no backticks.
+
 {
   "detected_language": "pl" or "fr" or "en" or "unknown",
-  "transcription": "exact transcription of what was said",
-  "follow_up": "a single question in the detected language asking if the user wants to convert this note into a checklist",
+  "transcription": "verbatim word-for-word of what was said — use [unclear] for inaudible parts",
+  "follow_up": "a single question asking if user wants to convert this into a checklist (in detected language)",
   "aisles": [
-    { "aisle": "Produce",  "items": ["carrots", "apples"] },
+    { "aisle": "Produce",  "items": ["only items explicitly spoken"] },
     { "aisle": "Dairy",    "items": ["milk", "butter"] },
     { "aisle": "Meat",     "items": ["chicken"] },
     { "aisle": "Bakery",   "items": ["bread"] },
@@ -2834,20 +2919,15 @@ Required JSON structure:
     { "aisle": "Pharmacy", "items": ["aspirin"] },
     { "aisle": "Other",    "items": ["anything uncategorized"] }
   ],
-  "list_items": ["flat array of ALL items combined across all aisles — for backward compatibility"],
-  "detected_stores": ["array", "of", "store", "or", "brand", "names", "mentioned"]
+  "list_items": ["flat array of ALL items — only what was explicitly spoken"],
+  "detected_stores": ["only store/brand names clearly spoken — empty [] if none"]
 }
 
-Rules:
-- detected_language must be exactly "pl", "fr", "en", or "unknown"
-- transcription must be verbatim in the original language
-- follow_up must be in the SAME language as the transcription
-  - Polish: ask using "Tak / Nie" framing
-  - French: ask using "Oui / Non" framing
-  - English: ask using "Yes / No" framing
-- aisles: group every extracted item into the most logical grocery store aisle. Omit aisles with zero items. Keep item names in the language they were spoken.
-- list_items: flat array of ALL items (same items as aisles, just unnested) for backward compatibility. Empty array [] if no items.
-- detected_stores: store names, grocery chains, pharmacies, or retail brands mentioned (Maxi, Costco, IGA, Pharmaprix, Dollarama, Sami Fruits, etc). Empty [] if none.
+Language rules:
+- detected_language: exactly "pl", "fr", "en", or "unknown"
+- follow_up: in the same language as the transcription (Polish: Tak/Nie, French: Oui/Non, English: Yes/No)
+- Item names: keep in the language they were spoken
+- Omit aisles with zero items
 - Return ONLY the JSON. Nothing else.`;
 
     const requestBody = {
@@ -2855,10 +2935,10 @@ Rules:
       contents: [{
         parts: [
           { inline_data: { mime_type: geminiMime, data: audioData } },
-          { text: 'Transcribe and analyze this audio note.' }
+          { text: 'Listen carefully and transcribe ONLY what is actually spoken. Do not invent content.' }
         ]
       }],
-      generationConfig: { temperature: 0.1, maxOutputTokens: 1000 }
+      generationConfig: { temperature: 0, maxOutputTokens: 1200 }
     };
 
     document.getElementById('thinkingLabel').textContent = t('thinking_analysing');
@@ -3668,7 +3748,7 @@ renderAll();
 // (moved to top of script — see PHASE 6 section for full declaration)
 
 function saveAppConfig() {
-  localStorage.setItem('dadapp_showCallPopup', JSON.stringify(appConfig.showCallPopup));
+  // reserved for future config persistence
 }
 
 /**
@@ -3689,15 +3769,8 @@ function syncSettingToNativeAndroid(key, value) {
 
 // ── SETTINGS EVENT HANDLERS ──────────────────────────────────
 
-function onSettingToggleChange(checkbox) {
-  appConfig.showCallPopup = checkbox.checked;
-  saveAppConfig();
-  syncSettingToNativeAndroid('showCallPopup', checkbox.checked);
-  showToast(t('toast_setting_saved'));
-}
-
 function onSettingLang(lang) {
-  setUiLang(lang);         // existing Phase 4 function: saves, updates switcher, re-renders
+  setUiLang(lang);
   syncSettingToNativeAndroid('uiLang', lang);
   showToast(t('toast_setting_saved'));
 }
@@ -3720,27 +3793,26 @@ function onSettingTheme(theme) {
   showToast(t('toast_theme_saved'));
 }
 
-// ── BIG MODE ─────────────────────────────────────────────────
+// ── BIG MODE (0=Normal, 1=Big, 2=Huge) ──────────────────────
 
-function applyBigMode(enabled) {
-  appConfig.bigMode = enabled;
-  localStorage.setItem('dadapp_bigMode', JSON.stringify(enabled));
-  document.documentElement.setAttribute('data-big', enabled ? '1' : '0');
-  syncSettingToNativeAndroid('bigMode', enabled);
+function applyBigMode(level) {
+  level = parseInt(level, 10) || 0;
+  appConfig.bigMode = level;
+  localStorage.setItem('dadapp_bigMode', String(level));
+  document.documentElement.setAttribute('data-big', level > 0 ? String(level) : '0');
+  syncSettingToNativeAndroid('bigMode', level);
 }
 
-function onSettingBigMode(checkbox) {
-  applyBigMode(checkbox.checked);
-  showToast(t(checkbox.checked ? 'toast_bigmode_on' : 'toast_bigmode_off'));
+function onSettingBigMode(level) {
+  applyBigMode(level);
+  const labels = ['NORMAL', 'BIG ✓', 'HUGE ✓'];
+  showToast('TEXT SIZE: ' + (labels[level] || 'NORMAL'));
+  renderSettings();
 }
 
 // ── RENDER SETTINGS TAB ──────────────────────────────────────
 
 function renderSettings() {
-  // Call popup toggle
-  const toggle = document.getElementById('settingCallPopup');
-  if (toggle) toggle.checked = appConfig.showCallPopup;
-
   // Lang buttons
   ['en', 'fr', 'pl'].forEach(lang => {
     const btn = document.getElementById('sLang' + lang.charAt(0).toUpperCase() + lang.slice(1));
@@ -3754,9 +3826,21 @@ function renderSettings() {
     if (btn) btn.classList.toggle('active', (appConfig.theme || 'default') === theme);
   });
 
-  // Big mode toggle
-  const bigToggle = document.getElementById('settingBigMode');
-  if (bigToggle) bigToggle.checked = !!appConfig.bigMode;
+  // Big mode 3-level selector
+  const cur = appConfig.bigMode || 0;
+  ['bigModeNormal','bigModeBig','bigModeHuge'].forEach((id, i) => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    const active = cur === i;
+    btn.style.background = active ? 'var(--black)' : 'var(--white)';
+    btn.style.color = active ? 'var(--yellow)' : 'var(--black)';
+    btn.style.boxShadow = active ? 'none' : '';
+  });
+
+  // Show Firefox install card if on Firefox
+  const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
+  const ffCard = document.getElementById('firefoxInstallCard');
+  if (ffCard) ffCard.style.display = isFirefox ? 'block' : 'none';
 }
 
 
@@ -3861,19 +3945,19 @@ window.renderLedger = function() {
   const docs = window._ledgerDocs.filter(x => !x.deleted);
   const unsettled = docs.filter(x => !x.settled);
 
-  // Calculate balance: positive = he owes me, negative = I owe him
+  // balance > 0 = Da owes Maciek; balance < 0 = Maciek owes Da
   let balance = 0;
   unsettled.forEach(item => {
-    if (item.paidBy === 'me')  balance += item.amount;
-    if (item.paidBy === 'him') balance -= item.amount;
+    if (item.paidBy === 'me')  balance += item.amount;   // Maciek paid
+    if (item.paidBy === 'him') balance -= item.amount;   // Da paid
   });
 
   // Summary card
   if (summaryEl) {
     const absAmt = Math.abs(balance).toFixed(2);
-    if (balance > 0.01)       summaryEl.textContent = t('ledger_owes_you', absAmt);
-    else if (balance < -0.01) summaryEl.textContent = t('ledger_you_owe', absAmt);
-    else                      summaryEl.textContent = t('ledger_settled');
+    if (balance > 0.01)       summaryEl.innerHTML = `🔴 ${t('ledger_owes_you', absAmt)}`;
+    else if (balance < -0.01) summaryEl.innerHTML = `🔴 ${t('ledger_you_owe', absAmt)}`;
+    else                      summaryEl.innerHTML = `🟢 ${t('ledger_settled')}`;
   }
 
   if (!docs.length) {
@@ -3882,18 +3966,27 @@ window.renderLedger = function() {
   }
 
   el.innerHTML = docs.map(item => {
-    const paidLabel = item.paidBy === 'me' ? t('ledger_paid_by_me') : t('ledger_paid_by_him');
+    const byMaciek = item.paidBy === 'me';
+    const arrow    = byMaciek ? '🟢' : '🔵';
+    // Green = Maciek paid (Da owes), Blue = Da paid (Maciek owes)
+    const paidLine = byMaciek
+      ? `<strong>Maciek</strong> paid &rarr; Da owes`
+      : `<strong>Da</strong> paid &rarr; Maciek owes`;
     const date = item.createdAt?.toDate
       ? item.createdAt.toDate().toLocaleDateString('en-CA', { month:'short', day:'numeric' }).toUpperCase()
       : '';
     const settledCls = item.settled ? ' settled' : '';
+    const settledBadge = item.settled
+      ? `<span style="font-size:var(--fs-xs);color:var(--green);font-weight:700;letter-spacing:0.08em;">✓ SETTLED</span>` : '';
     const settleBtn = !item.settled
       ? `<button class="ledger-settle-btn" onclick="ledgerSettle('${item.id}')">${t('ledger_settle')}</button>`
       : '';
     return `<div class="ledger-item${settledCls}">
+      <div style="font-size:22px;flex-shrink:0;margin-right:6px;line-height:1;">${arrow}</div>
       <div class="ledger-item-info">
         <span class="ledger-item-desc">${escHtml(item.desc)}</span>
-        <span class="ledger-item-meta">${paidLabel} · ${date}</span>
+        <span class="ledger-item-meta">${paidLine} · ${date}</span>
+        ${settledBadge}
       </div>
       <div class="ledger-item-amount">$${Number(item.amount).toFixed(2)}</div>
       ${settleBtn}
@@ -3903,8 +3996,6 @@ window.renderLedger = function() {
   // Re-apply i18n
   const descInp = document.getElementById('ledgerDesc');
   if (descInp) descInp.placeholder = t('ledger_desc_placeholder');
-  const addBtn = el.closest('.view')?.querySelector('[data-i18n-btn="btn_ledger_add"]');
-  if (addBtn) addBtn.textContent = t('btn_ledger_add');
 };
 
 async function ledgerAdd() {
@@ -3940,6 +4031,144 @@ window.ledgerSettle = ledgerSettle;
 window.t = t;
 
 // ── PHASE 7 BOOT: apply persisted theme + big mode ──────────
+// ── CUBEACR IMPORT ───────────────────────────────────────────
+
+const CUBE_DB_NAME = 'dadapp_cube';
+const CUBE_DB_KEY  = 'dirHandle';
+const CUBE_SEEN_KEY = 'dadapp_cube_seen'; // localStorage: Set of already-imported filenames
+
+function cubeSetStatus(msg) {
+  const el = document.getElementById('cubeStatus');
+  if (el) el.textContent = msg;
+}
+
+// Open (or create) a tiny IndexedDB to persist the directory handle
+function cubeOpenDB() {
+  return new Promise((res, rej) => {
+    const req = indexedDB.open(CUBE_DB_NAME, 1);
+    req.onupgradeneeded = e => e.target.result.createObjectStore('handles');
+    req.onsuccess = e => res(e.target.result);
+    req.onerror   = e => rej(e.target.error);
+  });
+}
+
+async function cubeSaveHandle(handle) {
+  const db = await cubeOpenDB();
+  return new Promise((res, rej) => {
+    const tx = db.transaction('handles', 'readwrite');
+    tx.objectStore('handles').put(handle, CUBE_DB_KEY);
+    tx.oncomplete = res;
+    tx.onerror    = e => rej(e.target.error);
+  });
+}
+
+async function cubeLoadHandle() {
+  const db = await cubeOpenDB();
+  return new Promise((res, rej) => {
+    const tx = db.transaction('handles', 'readonly');
+    const req = tx.objectStore('handles').get(CUBE_DB_KEY);
+    req.onsuccess = e => res(e.target.result || null);
+    req.onerror   = e => rej(e.target.error);
+  });
+}
+
+async function cubePickFolder() {
+  if (!window.showDirectoryPicker) {
+    showToast('NOT SUPPORTED IN THIS BROWSER');
+    return;
+  }
+  try {
+    const handle = await window.showDirectoryPicker({ mode: 'read' });
+    await cubeSaveHandle(handle);
+    cubeSetStatus('✓ Folder saved: ' + handle.name);
+    showToast('FOLDER SAVED — TAP IMPORT');
+  } catch(e) {
+    if (e.name !== 'AbortError') cubeSetStatus('Error: ' + e.message);
+  }
+}
+
+async function cubeImport() {
+  if (!window.showDirectoryPicker) {
+    showToast('NOT SUPPORTED IN THIS BROWSER');
+    return;
+  }
+  let handle;
+  try {
+    handle = await cubeLoadHandle();
+  } catch(e) { /* ignore */ }
+
+  if (!handle) {
+    showToast('PICK A FOLDER FIRST');
+    return;
+  }
+
+  // Re-verify permission (required after page reload)
+  try {
+    const perm = await handle.requestPermission({ mode: 'read' });
+    if (perm !== 'granted') { cubeSetStatus('Permission denied'); return; }
+  } catch(e) { cubeSetStatus('Permission error: ' + e.message); return; }
+
+  const seen = new Set(JSON.parse(localStorage.getItem(CUBE_SEEN_KEY) || '[]'));
+  const audioExts = ['.m4a', '.mp3', '.aac', '.ogg', '.wav', '.opus', '.webm'];
+  let imported = 0;
+
+  cubeSetStatus('Scanning...');
+  try {
+    for await (const [name, fileHandle] of handle.entries()) {
+      if (fileHandle.kind !== 'file') continue;
+      const lower = name.toLowerCase();
+      if (!audioExts.some(ext => lower.endsWith(ext))) continue;
+      if (seen.has(name)) continue;
+
+      const file = await fileHandle.getFile();
+      const dataUrl = await new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onload = () => res(r.result);
+        r.onerror = rej;
+        r.readAsDataURL(file);
+      });
+
+      const now = new Date(file.lastModified || Date.now());
+      const dateStr = now.toLocaleDateString('en-CA', { month:'short', day:'numeric', year:'numeric' }).toUpperCase();
+      const timeStr = now.toLocaleTimeString('en-CA', { hour:'2-digit', minute:'2-digit' });
+
+      state.notes.unshift({
+        id: Date.now() + imported,
+        title: `📞 ${name.replace(/\.[^.]+$/,'')}`,
+        body: `[CubeACR recording · ${dateStr} ${timeStr}]`,
+        audioUrl:  dataUrl,
+        audioWebm: dataUrl,
+        done: false,
+        lang: uiLang,
+        date: dateStr,
+        cubeFile: name,
+      });
+
+      seen.add(name);
+      imported++;
+    }
+  } catch(e) {
+    cubeSetStatus('Scan error: ' + e.message);
+    return;
+  }
+
+  if (imported > 0) {
+    localStorage.setItem(CUBE_SEEN_KEY, JSON.stringify([...seen]));
+    save();
+    renderNotes();
+    cubeSetStatus(`✓ ${imported} recording${imported > 1 ? 's' : ''} imported`);
+    showToast(`✓ ${imported} RECORDING${imported > 1 ? 'S' : ''} IMPORTED`);
+    // Switch to notes tab to show them
+    switchView('notes', document.querySelector('[data-view="notes"]'));
+  } else {
+    cubeSetStatus('No new recordings found');
+    showToast('NO NEW RECORDINGS');
+  }
+}
+
+window.cubePickFolder = cubePickFolder;
+window.cubeImport     = cubeImport;
+
 applyTheme(appConfig.theme);
 applyBigMode(appConfig.bigMode);
 window.t = t; // expose for Firebase module
