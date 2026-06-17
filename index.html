@@ -12,7 +12,17 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>DAD APP</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;700&family=Lexend:wght@400;700&display=swap');
+  @font-face {
+    font-family: 'OpenDyslexic';
+    src: url('https://cdn.jsdelivr.net/npm/opendyslexic@0.91.12/fonts/OpenDyslexic-Regular.otf') format('opentype');
+    font-weight: 400; font-style: normal;
+  }
+  @font-face {
+    font-family: 'OpenDyslexic';
+    src: url('https://cdn.jsdelivr.net/npm/opendyslexic@0.91.12/fonts/OpenDyslexic-Bold.otf') format('opentype');
+    font-weight: 700; font-style: normal;
+  }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -28,6 +38,12 @@
     --shadow: 4px 4px 0px #000000;
     --border: 3px solid #000000;
     --font: 'Atkinson Hyperlegible', 'Arial', sans-serif;
+
+    /* Font choice — overridden by data-font attribute */
+    --font-atkinson: 'Atkinson Hyperlegible', Arial, sans-serif;
+    --font-inter:    'Inter', Arial, sans-serif;
+    --font-lexend:   'Lexend', Arial, sans-serif;
+    --font-dyslexic: 'OpenDyslexic', Arial, sans-serif;
 
     /* Semantic theme tokens */
     --bg:        var(--yellow);
@@ -51,6 +67,12 @@
     --fs-3xl: 28px;
     --fs-nav: 10px;
   }
+
+  /* ── FONT OVERRIDES ── */
+  [data-font="inter"]    { --font: var(--font-inter);    }
+  [data-font="lexend"]   { --font: var(--font-lexend);   }
+  [data-font="dyslexic"] { --font: var(--font-dyslexic); }
+  /* Atkinson is the default — no override needed */
 
   /* ── WARM PAPER THEME (Cream/Brown) ── */
   [data-theme="warm"] {
@@ -1096,7 +1118,8 @@
   }
   .settings-theme-btns {
     display: flex;
-    gap: 8px;
+    gap: 6px;
+    flex-wrap: wrap;
   }
   .settings-theme-btn {
     width: 52px;
@@ -1110,6 +1133,46 @@
     align-items: center;
     justify-content: center;
     transition: transform 0.1s, box-shadow 0.1s;
+  }
+  /* Font picker row */
+  .settings-font-btns {
+    display: flex;
+    gap: 0;
+    width: 100%;
+    border: 3px solid var(--black);
+    box-shadow: 3px 3px 0 var(--black);
+    overflow: hidden;
+  }
+  .settings-font-btn {
+    flex: 1;
+    padding: 14px 4px 10px;
+    border: none;
+    border-right: 3px solid var(--black);
+    background: var(--bg-card);
+    color: var(--black);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    transition: background 0.1s, color 0.1s;
+  }
+  .settings-font-btn:last-child { border-right: none; }
+  .settings-font-btn.active {
+    background: var(--black);
+    color: var(--yellow);
+  }
+  .settings-font-btn .sfb-preview {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .settings-font-btn .sfb-label {
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.7;
   }
   .settings-theme-btn.active {
     box-shadow: none;
@@ -1543,6 +1606,34 @@
             <button class="settings-theme-btn" id="themeDefault" onclick="onSettingTheme('default')" title="Yellow">☀️</button>
             <button class="settings-theme-btn" id="themeWarm"    onclick="onSettingTheme('warm')"    title="Warm Paper">📜</button>
             <button class="settings-theme-btn" id="themeBw"      onclick="onSettingTheme('bw')"      title="Black &amp; White" style="font-size:14px;font-weight:900;letter-spacing:-1px;">B&amp;W</button>
+          </div>
+        </div>
+
+        <div class="settings-divider"></div>
+
+        <!-- FONT ROW -->
+        <div class="settings-row" style="flex-direction:column;align-items:stretch;gap:14px;padding-bottom:22px;">
+          <div class="settings-row-label">
+            <span class="settings-row-icon">✍️</span>
+            <span style="font-weight:700;font-size:var(--fs-sm);letter-spacing:0.08em;text-transform:uppercase;" data-i18n="settings_font_label">FONT</span>
+          </div>
+          <div class="settings-font-btns">
+            <button class="settings-font-btn" id="fontAtkinson" onclick="onSettingFont('atkinson')">
+              <span class="sfb-preview" style="font-family:'Atkinson Hyperlegible',Arial,sans-serif;">Aa</span>
+              <span class="sfb-label">Atkinson</span>
+            </button>
+            <button class="settings-font-btn" id="fontInter" onclick="onSettingFont('inter')">
+              <span class="sfb-preview" style="font-family:'Inter',Arial,sans-serif;">Aa</span>
+              <span class="sfb-label">Inter</span>
+            </button>
+            <button class="settings-font-btn" id="fontLexend" onclick="onSettingFont('lexend')">
+              <span class="sfb-preview" style="font-family:'Lexend',Arial,sans-serif;">Aa</span>
+              <span class="sfb-label">Lexend</span>
+            </button>
+            <button class="settings-font-btn" id="fontDyslexic" onclick="onSettingFont('dyslexic')">
+              <span class="sfb-preview" style="font-family:'OpenDyslexic',Arial,sans-serif;">Aa</span>
+              <span class="sfb-label">Dyslexic</span>
+            </button>
           </div>
         </div>
 
@@ -2280,6 +2371,7 @@ const I18N = {
 const appConfig = {
   theme:   localStorage.getItem('dadapp_theme')   || 'default',
   bigMode: parseInt(localStorage.getItem('dadapp_bigMode') ?? '0', 10) || 0,
+  font:    localStorage.getItem('dadapp_font')    || 'atkinson',
 };
 
 const THEMES = ['default', 'warm', 'bw'];
@@ -3793,6 +3885,25 @@ function onSettingTheme(theme) {
   showToast(t('toast_theme_saved'));
 }
 
+// ── FONT SYSTEM ──────────────────────────────────────────────
+
+const FONTS = ['atkinson', 'inter', 'lexend', 'dyslexic'];
+
+function applyFont(font) {
+  font = FONTS.includes(font) ? font : 'atkinson';
+  appConfig.font = font;
+  localStorage.setItem('dadapp_font', font);
+  // atkinson is the :root default — for others set data-font
+  document.documentElement.setAttribute('data-font', font === 'atkinson' ? '' : font);
+}
+
+function onSettingFont(font) {
+  applyFont(font);
+  renderSettings();
+  const names = { atkinson:'Atkinson', inter:'Inter', lexend:'Lexend', dyslexic:'OpenDyslexic' };
+  showToast('FONT: ' + (names[font] || font));
+}
+
 // ── BIG MODE (0=Normal, 1=Big, 2=Huge) ──────────────────────
 
 function applyBigMode(level) {
@@ -3824,6 +3935,15 @@ function renderSettings() {
     const id = 'theme' + theme.charAt(0).toUpperCase() + theme.slice(1);
     const btn = document.getElementById(id);
     if (btn) btn.classList.toggle('active', (appConfig.theme || 'default') === theme);
+  });
+
+  // Font picker
+  const curFont = appConfig.font || 'atkinson';
+  FONTS.forEach(f => {
+    const btn = document.getElementById('font' + f.charAt(0).toUpperCase() + f.slice(1));
+    if (!btn) return;
+    const active = curFont === f;
+    btn.classList.toggle('active', active);
   });
 
   // Big mode 3-level selector
@@ -4171,6 +4291,7 @@ window.cubeImport     = cubeImport;
 
 applyTheme(appConfig.theme);
 applyBigMode(appConfig.bigMode);
+applyFont(appConfig.font);
 window.t = t; // expose for Firebase module
 
 // ── PWA: Service Worker + Install Prompt ─────────────────────
