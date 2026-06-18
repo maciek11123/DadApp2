@@ -1,4 +1,4 @@
-const CACHE = 'dadapp-v1';
+const CACHE = 'dadapp-v4';
 const ASSETS = [
   '/DadApp2/',
   '/DadApp2/index.html',
@@ -19,10 +19,9 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  // Network first for Firebase + Gemini, cache first for app shell
   const url = new URL(e.request.url);
   if (url.hostname.includes('firebase') || url.hostname.includes('googleapis')) {
-    return; // let Firebase/Gemini always go to network
+    return;
   }
   e.respondWith(
     fetch(e.request)
