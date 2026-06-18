@@ -1468,6 +1468,25 @@
     <div class="view" id="view-settings">
       <div class="settings-card">
 
+        <!-- USER ROW -->
+        <div class="settings-row" style="flex-direction:column;align-items:stretch;gap:10px;padding-bottom:18px;">
+          <div class="settings-row-label">
+            <span class="settings-row-icon">👤</span>
+            <span style="font-weight:700;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;">WHO ARE YOU?</span>
+          </div>
+          <div style="display:flex;gap:0;border:3px solid var(--black);box-shadow:3px 3px 0 var(--black);">
+            <button id="userMaciek" onclick="onSettingUser('maciek')"
+              style="flex:1;font-family:var(--font);font-size:13px;font-weight:700;letter-spacing:0.06em;padding:16px 4px;border:none;border-right:3px solid var(--black);background:var(--white);color:var(--black);cursor:pointer;">
+              👦 MACIEK
+            </button>
+            <button id="userDad" onclick="onSettingUser('dad')"
+              style="flex:1;font-family:var(--font);font-size:13px;font-weight:700;letter-spacing:0.06em;padding:16px 4px;border:none;background:var(--white);color:var(--black);cursor:pointer;">
+              👨 DAD
+            </button>
+          </div>
+        </div>
+
+        <div class="settings-divider"></div>
 
         <!-- LANGUAGE ROW -->
         <div class="settings-row settings-row-lang">
@@ -1569,14 +1588,11 @@
       <div class="ledger-summary" id="ledgerSummary"></div>
       <div id="ledgerList"></div>
       <div class="note-card" style="margin-top:16px;">
-        <input class="title-input" id="ledgerDesc"   type="text"   maxlength="60" style="width:100%;margin-bottom:10px;" data-i18n-placeholder="ledger_desc_placeholder">
-        <div style="display:flex;gap:10px;margin-bottom:10px;">
-          <input class="title-input" id="ledgerAmount" type="number" placeholder="$0.00" step="0.01" style="flex:1;">
-          <select class="title-input" id="ledgerPaidBy" style="flex:1;cursor:pointer;">
-              <option value="me" data-i18n-opt="ledger_paid_by_me"></option>
-              <option value="him" data-i18n-opt="ledger_paid_by_him"></option>
-            </select>
+        <div id="ledgerWhoHint" style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;padding:8px 10px;background:var(--bg);border:2px solid var(--black);">
+          DA BOUGHT THIS FOR ME — I OWE DA
         </div>
+        <input class="title-input" id="ledgerDesc" type="text" maxlength="60" style="width:100%;margin-bottom:10px;" data-i18n-placeholder="ledger_desc_placeholder">
+        <input class="title-input" id="ledgerAmount" type="number" placeholder="$0.00" step="0.01" style="width:100%;margin-bottom:10px;">
         <button class="btn btn-blue" style="width:100%;" onclick="ledgerAdd()" data-i18n-btn="btn_ledger_add"></button>
       </div>
     </div>
@@ -2204,6 +2220,7 @@ const I18N = {
 const appConfig = {
   theme:   localStorage.getItem('dadapp_theme')   || 'default',
   bigMode: JSON.parse(localStorage.getItem('dadapp_bigMode') ?? 'false'),
+  user:    localStorage.getItem('dadapp_user') || 'maciek',
 };
 
 const THEMES = ['default', 'warm', 'bw'];
@@ -3747,6 +3764,13 @@ function onSettingTheme(theme) {
   showToast(t('toast_theme_saved'));
 }
 
+function onSettingUser(user) {
+  appConfig.user = user;
+  localStorage.setItem('dadapp_user', user);
+  renderSettings();
+  showToast(user === 'dad' ? '👨 DAD' : '👦 MACIEK');
+}
+
 // ── BIG MODE ─────────────────────────────────────────────────
 
 function applyBigMode(enabled) {
@@ -3764,6 +3788,16 @@ function onSettingBigMode(checkbox) {
 // ── RENDER SETTINGS TAB ──────────────────────────────────────
 
 function renderSettings() {
+  // User buttons
+  const curUser = appConfig.user || 'maciek';
+  ['maciek', 'dad'].forEach(u => {
+    const btn = document.getElementById('user' + u.charAt(0).toUpperCase() + u.slice(1));
+    if (!btn) return;
+    const active = curUser === u;
+    btn.style.background = active ? 'var(--black)' : 'var(--white)';
+    btn.style.color = active ? 'var(--yellow)' : 'var(--black)';
+  });
+
   // Lang buttons
   ['en', 'fr', 'pl'].forEach(lang => {
     const btn = document.getElementById('sLang' + lang.charAt(0).toUpperCase() + lang.slice(1));
@@ -3891,12 +3925,14 @@ window.renderLedger = function() {
     if (item.paidBy === 'him') balance -= item.amount;
   });
 
-  // Summary card
+  // Summary card — Da always paid, Maciek always owes
   if (summaryEl) {
     const absAmt = Math.abs(balance).toFixed(2);
-    if (balance > 0.01)       summaryEl.textContent = t('ledger_owes_you', absAmt);
-    else if (balance < -0.01) summaryEl.textContent = t('ledger_you_owe', absAmt);
-    else                      summaryEl.textContent = t('ledger_settled');
+    if (Math.abs(balance) > 0.01) {
+      summaryEl.textContent = `MACIEK OWES DA $${absAmt}`;
+    } else {
+      summaryEl.textContent = t('ledger_settled');
+    }
   }
 
   if (!docs.length) {
@@ -3905,18 +3941,18 @@ window.renderLedger = function() {
   }
 
   el.innerHTML = docs.map(item => {
-    const paidLabel = item.paidBy === 'me' ? t('ledger_paid_by_me') : t('ledger_paid_by_him');
     const date = item.createdAt?.toDate
       ? item.createdAt.toDate().toLocaleDateString('en-CA', { month:'short', day:'numeric' }).toUpperCase()
       : '';
     const settledCls = item.settled ? ' settled' : '';
+    const settledBadge = item.settled ? `<span style="font-size:9px;color:var(--green);font-weight:700;letter-spacing:0.08em;">✓ SETTLED</span>` : '';
     const settleBtn = !item.settled
       ? `<button class="ledger-settle-btn" onclick="ledgerSettle('${item.id}')">${t('ledger_settle')}</button>`
       : '';
     return `<div class="ledger-item${settledCls}">
       <div class="ledger-item-info">
         <span class="ledger-item-desc">${escHtml(item.desc)}</span>
-        <span class="ledger-item-meta">${paidLabel} · ${date}</span>
+        <span class="ledger-item-meta">Da paid · ${date} ${settledBadge}</span>
       </div>
       <div class="ledger-item-amount">$${Number(item.amount).toFixed(2)}</div>
       ${settleBtn}
@@ -3933,20 +3969,23 @@ window.renderLedger = function() {
 async function ledgerAdd() {
   const desc   = document.getElementById('ledgerDesc')?.value.trim();
   const amount = parseFloat(document.getElementById('ledgerAmount')?.value);
-  const paidBy = document.getElementById('ledgerPaidBy')?.value;
-  if (!desc)        { showToast(t('ledger_desc_placeholder')); return; }
-  if (isNaN(amount) || amount <= 0) { showToast('$?'); return; }
+  if (!desc)                        { showToast('ADD A DESCRIPTION'); return; }
+  if (isNaN(amount) || amount <= 0) { showToast('ADD AN AMOUNT'); return; }
+  // Da always paid — Maciek always owes. Simple.
+  const paidBy = 'him';
   const fb = window._fb;
-  if (!fb) { showToast('Firebase not ready'); return; }
+  if (!fb) { showToast('FIREBASE NOT READY'); return; }
   try {
     await fb.addDoc(fb.collection(fb.db, 'ledger'), {
       desc, amount, paidBy,
       settled: false,
+      deleted: false,
       createdAt: fb.serverTimestamp()
     });
     document.getElementById('ledgerDesc').value   = '';
     document.getElementById('ledgerAmount').value = '';
-  } catch(e) { showToast('Error: ' + e.message); }
+    showToast('✓ SAVED');
+  } catch(e) { showToast('ERROR: ' + e.message); }
 }
 window.ledgerAdd = ledgerAdd;
 
