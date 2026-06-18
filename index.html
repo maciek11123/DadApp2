@@ -1585,16 +1585,17 @@
         <span class="fb-dot" id="ledgerFbDot"></span>
         <span id="ledgerFbStatus" data-i18n="fb_connecting"></span>
       </div>
-      <div class="ledger-summary" id="ledgerSummary"></div>
-      <div id="ledgerList"></div>
-      <div class="note-card" style="margin-top:16px;">
-        <div id="ledgerWhoHint" style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;padding:8px 10px;background:var(--bg);border:2px solid var(--black);">
-          DA BOUGHT THIS FOR ME — I OWE DA
+      <!-- ADD FORM AT TOP -->
+      <div class="note-card" style="margin-bottom:14px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;padding:8px 10px;background:var(--bg);border:2px solid var(--black);">
+          DAD BOUGHT THIS FOR ME — I OWE DAD
         </div>
         <input class="title-input" id="ledgerDesc" type="text" maxlength="60" style="width:100%;margin-bottom:10px;" data-i18n-placeholder="ledger_desc_placeholder">
         <input class="title-input" id="ledgerAmount" type="number" placeholder="$0.00" step="0.01" style="width:100%;margin-bottom:10px;">
         <button class="btn btn-blue" style="width:100%;" onclick="ledgerAdd()" data-i18n-btn="btn_ledger_add"></button>
       </div>
+      <div class="ledger-summary" id="ledgerSummary"></div>
+      <div id="ledgerList"></div>
     </div>
 
     <!-- ── PHASE 5: STORES VIEW ── -->
@@ -3924,7 +3925,7 @@ window.renderLedger = function() {
 
   if (summaryEl) {
     if (balance > 0.01) {
-      summaryEl.textContent = `MACIEK OWES DA $${balance.toFixed(2)}`;
+      summaryEl.textContent = `MACIEK OWES DAD $${balance.toFixed(2)}`;
       summaryEl.style.background = 'var(--black)';
     } else {
       summaryEl.textContent = 'ALL SETTLED ✓';
@@ -3945,18 +3946,22 @@ window.renderLedger = function() {
       ? new Date(item.settledAt).toLocaleDateString('en-CA', { month:'short', day:'numeric' }).toUpperCase()
       : '';
     const meta = isArchive
-      ? `Da paid · ${added}  ·  ✓ SETTLED ${settledDate}`
-      : `Da paid · ${added}`;
-    const actionBtn = isArchive
-      ? `<button class="ledger-settle-btn" style="background:#e53935;color:#fff;border-color:#e53935;" onclick="ledgerDelete('${item.id}')">🗑️</button>`
-      : `<button class="ledger-settle-btn" onclick="ledgerSettle('${item.id}')">${t('ledger_settle')}</button>`;
+      ? `Dad paid · ${added}  ·  ✓ SETTLED ${settledDate}`
+      : `Dad paid · ${added}`;
+    const deleteBtn = `<button class="ledger-settle-btn" style="background:#e53935;color:#fff;border-color:#e53935;box-shadow:2px 2px 0 #000;" onclick="ledgerDelete('${item.id}')">🗑️</button>`;
+    const settleBtn = isArchive
+      ? deleteBtn
+      : `<div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
+           <button class="ledger-settle-btn" onclick="ledgerSettle('${item.id}')">${t('ledger_settle')}</button>
+           ${deleteBtn}
+         </div>`;
     return `<div class="ledger-item${isArchive ? ' settled' : ''}">
       <div class="ledger-item-info">
         <span class="ledger-item-desc">${escHtml(item.desc)}</span>
         <span class="ledger-item-meta">${meta}</span>
       </div>
       <div class="ledger-item-amount">$${Number(item.amount).toFixed(2)}</div>
-      ${actionBtn}
+      ${settleBtn}
     </div>`;
   }
 
