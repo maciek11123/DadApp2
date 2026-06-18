@@ -2478,6 +2478,10 @@ function renderToday() {
         <div class="done-divider-line"></div>
         <div class="done-divider-label">${t('today_done_label')} (${done.length})</div>
         <div class="done-divider-line"></div>
+        <button onclick="event.stopPropagation();clearDoneToArchive()"
+          style="flex-shrink:0;font-family:var(--font);font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:5px 10px;border:2px solid var(--black);background:var(--bg);color:var(--black);cursor:pointer;white-space:nowrap;box-shadow:2px 2px 0 var(--black);">
+          🗂️ CLEAR
+        </button>
       </div>`;
     done.forEach(item => {
       const i = state.todayItems.indexOf(item);
@@ -2493,6 +2497,33 @@ function renderToday() {
   }
 
   el.innerHTML = html;
+}
+
+function clearDoneToArchive() {
+  const done = state.todayItems.filter(x => x.done);
+  if (!done.length) return;
+
+  // Build a note body from all done items
+  const body = done.map(x => '✓ ' + x.text).join('\n');
+  const now  = new Date();
+  const dateStr = now.toLocaleDateString('en-CA', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase();
+
+  // Push to notes as archived (deleted=true = archive)
+  state.notes.unshift({
+    title: '🗂️ LIST — ' + dateStr,
+    body,
+    date: dateStr,
+    deleted: true,
+    deletedAt: now.toISOString()
+  });
+
+  // Remove done items from today list
+  state.todayItems = state.todayItems.filter(x => !x.done);
+
+  save();
+  renderToday();
+  renderNotes();
+  showToast('🗂️ ' + done.length + ' ITEM' + (done.length > 1 ? 'S' : '') + ' ARCHIVED');
 }
 
 function renderBills() {
