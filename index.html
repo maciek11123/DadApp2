@@ -286,8 +286,10 @@
   .scroll-area {
     flex: 1;
     overflow-y: auto;
+    overflow-x: hidden;
     padding: 8px 16px 100px;
     scrollbar-width: none;
+    box-sizing: border-box;
   }
   .scroll-area::-webkit-scrollbar { display: none; }
 
@@ -304,6 +306,9 @@
     box-shadow: var(--shadow);
     padding: 16px;
     margin-bottom: 16px;
+    box-sizing: border-box;
+    width: 100%;
+    overflow: hidden;
   }
   .card-header {
     display: flex;
@@ -323,6 +328,8 @@
     text-transform: uppercase;
     outline: none;
     color: var(--text);
+    box-sizing: border-box;
+    min-width: 0;
   }
   .title-input::placeholder { color: var(--text-dim); }
   .title-input:focus { filter: brightness(0.97); }
@@ -355,14 +362,24 @@
     min-height: 100px;
     outline: none;
     color: var(--text);
+    box-sizing: border-box;
   }
   .brain-dump::placeholder { color: var(--text-dim); }
   .brain-dump:focus { filter: brightness(0.97); }
 
   .card-actions {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     margin-top: 14px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .card-actions .btn {
+    flex: 1;
+    min-width: 0;
+    word-break: break-word;
+    white-space: normal;
+    text-align: center;
   }
 
   .btn {
@@ -3930,8 +3947,11 @@ function applyFont(font) {
   font = FONTS.includes(font) ? font : 'atkinson';
   appConfig.font = font;
   localStorage.setItem('dadapp_font', font);
-  // atkinson is the :root default — for others set data-font
-  document.documentElement.setAttribute('data-font', font === 'atkinson' ? '' : font);
+  if (font === 'atkinson') {
+    document.documentElement.removeAttribute('data-font');
+  } else {
+    document.documentElement.setAttribute('data-font', font);
+  }
 }
 
 function onSettingFont(font) {
