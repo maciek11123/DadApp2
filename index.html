@@ -1910,7 +1910,7 @@ window.DAD_CONFIG = {
   // ── BRING LIST listener ─────────────────────────────────────
   const bringQ = query(collection(db, 'bringlist'), orderBy('createdAt', 'desc'));
   onSnapshot(bringQ, (snap) => {
-    window._bringDocs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    window._bringDocs = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(x => !x.deleted);
     window.renderBring && window.renderBring();
     // Show live dot on nav if there are unpacked items
     const unpacked = window._bringDocs.filter(x => !x.packed).length;
@@ -4013,7 +4013,7 @@ window._ledgerDocs = [];
 window.renderBring = function() {
   const el = document.getElementById('bringList');
   if (!el) return;
-  const docs = window._bringDocs.filter(x => !x.deleted);
+  const docs = window._bringDocs.filter(x => !x.deleted && x.text);
   if (!docs.length) {
     el.innerHTML = `<div class="empty-state">${escHtml(t('bring_empty')).replace('\n','<br>')}</div>`;
     return;
@@ -4083,12 +4083,9 @@ async function bringDelete(id) {
   const fb = window._fb;
   if (!fb) return;
   try {
-    // Soft delete: mark as deleted (Firestore free tier — avoid delete ops)
-    await fb.updateDoc(fb.doc(fb.db, 'bringlist', id), { deleted: true, packed: true });
-    // Filter out from local cache immediately
-    window._bringDocs = window._bringDocs.filter(x => x.id !== id || !x.deleted);
-    window.renderBring();
-  } catch(e) { console.error(e); }
+    await fb.updateDoc(fb.doc(fb.db, 'bringlist', id), { deleted: true });
+    // onSnapshot will fire and re-render — no need to touch local cache manually
+  } catch(e) { showToast('Error: ' + e.message); }
 }
 window.bringDelete = bringDelete;
 
