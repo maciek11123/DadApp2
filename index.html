@@ -286,10 +286,8 @@
   .scroll-area {
     flex: 1;
     overflow-y: auto;
-    overflow-x: hidden;
     padding: 8px 16px 100px;
     scrollbar-width: none;
-    box-sizing: border-box;
   }
   .scroll-area::-webkit-scrollbar { display: none; }
 
@@ -306,9 +304,6 @@
     box-shadow: var(--shadow);
     padding: 16px;
     margin-bottom: 16px;
-    box-sizing: border-box;
-    width: 100%;
-    overflow: hidden;
   }
   .card-header {
     display: flex;
@@ -328,8 +323,6 @@
     text-transform: uppercase;
     outline: none;
     color: var(--text);
-    box-sizing: border-box;
-    min-width: 0;
   }
   .title-input::placeholder { color: var(--text-dim); }
   .title-input:focus { filter: brightness(0.97); }
@@ -362,24 +355,14 @@
     min-height: 100px;
     outline: none;
     color: var(--text);
-    box-sizing: border-box;
   }
   .brain-dump::placeholder { color: var(--text-dim); }
   .brain-dump:focus { filter: brightness(0.97); }
 
   .card-actions {
     display: flex;
-    gap: 10px;
+    gap: 12px;
     margin-top: 14px;
-    width: 100%;
-    box-sizing: border-box;
-  }
-  .card-actions .btn {
-    flex: 1;
-    min-width: 0;
-    word-break: break-word;
-    white-space: normal;
-    text-align: center;
   }
 
   .btn {
@@ -740,17 +723,11 @@
   .note-archive-btn {
     background: none;
     border: none;
-    font-size: 22px;
+    font-size: 15px;
     cursor: pointer;
     color: var(--text-dim);
-    padding: 4px 6px;
+    padding: 0 0 0 4px;
     flex-shrink: 0;
-    line-height: 1;
-    min-width: 40px;
-    min-height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
   .note-archive-btn:hover { color: var(--accent); }
   .note-restore-btn {
@@ -1450,7 +1427,6 @@
     text-align: center;
     margin-bottom: 14px;
   }
-  .ledger-summary:empty { display: none; }
   .ledger-item {
     background: var(--bg-card);
     border: var(--border);
@@ -1544,10 +1520,6 @@
           <button class="btn btn-blue" id="btnSaveNote" onclick="saveNote()"></button>
           <button class="btn btn-pink" id="btnRecAudio" onclick="openRecorder()"></button>
         </div>
-        <button id="btnClearNote" onclick="clearNoteEditor()"
-          style="width:100%;margin-top:8px;font-family:var(--font);font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:12px;border:2px dashed var(--black);background:transparent;color:var(--text-muted);cursor:pointer;opacity:0;pointer-events:none;transition:opacity 0.15s;">
-          ✕ CLEAR NOTE
-        </button>
       </div>
 
       <!-- Archive toggle -->
@@ -1763,13 +1735,7 @@
       </div>
       <div class="ledger-summary" id="ledgerSummary"></div>
       <div id="ledgerList"></div>
-      <div style="display:flex;justify-content:flex-end;margin-bottom:6px;">
-        <button id="ledgerClearBtn" onclick="ledgerClearSettled()"
-          style="display:none;font-family:var(--font);font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:8px 14px;border:2px solid var(--black);background:var(--bg-card);color:var(--text-muted);cursor:pointer;box-shadow:2px 2px 0 var(--black);">
-          🗑️ CLEAR SETTLED
-        </button>
-      </div>
-      <div class="note-card" style="margin-top:8px;">
+      <div class="note-card" style="margin-top:16px;">
         <input class="title-input" id="ledgerDesc"   type="text"   maxlength="60" style="width:100%;margin-bottom:10px;" data-i18n-placeholder="ledger_desc_placeholder">
         <div style="display:flex;gap:10px;margin-bottom:10px;">
           <input class="title-input" id="ledgerAmount" type="number" placeholder="$0.00" step="0.01" style="flex:1;">
@@ -1927,7 +1893,7 @@ window.DAD_CONFIG = {
   // ── BRING LIST listener ─────────────────────────────────────
   const bringQ = query(collection(db, 'bringlist'), orderBy('createdAt', 'desc'));
   onSnapshot(bringQ, (snap) => {
-    window._bringDocs = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(x => !x.deleted);
+    window._bringDocs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     window.renderBring && window.renderBring();
     // Show live dot on nav if there are unpacked items
     const unpacked = window._bringDocs.filter(x => !x.packed).length;
@@ -1940,10 +1906,10 @@ window.DAD_CONFIG = {
   // ── LEDGER listener ─────────────────────────────────────────
   const ledgerQ = query(collection(db, 'ledger'), orderBy('createdAt', 'desc'));
   onSnapshot(ledgerQ, (snap) => {
-    window._ledgerDocs = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(x => !x.deleted);
+    window._ledgerDocs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     window.renderLedger && window.renderLedger();
     setFbStatus('ledger', 'live');
-  }, (err) => { console.error('Ledger snapshot error:', err); setFbStatus('ledger', 'offline'); });
+  }, (err) => { console.error(err); setFbStatus('ledger', 'offline'); });
 
   function setFbStatus(view, state) {
     const dot    = document.getElementById(view + 'FbDot');
@@ -2444,9 +2410,6 @@ function applyI18n() {
   // Inputs
   document.getElementById('titleInput').placeholder = t('note_title_placeholder');
   document.getElementById('brainDump').placeholder = t('note_body_placeholder');
-  // Show/hide Clear Note button reactively as user types
-  document.getElementById('titleInput').addEventListener('input', updateClearNoteBtn);
-  document.getElementById('brainDump').addEventListener('input', updateClearNoteBtn);
   document.getElementById('todayInput').placeholder = t('today_input_placeholder');
   document.getElementById('billNameInput').placeholder = t('bill_name_placeholder');
   document.getElementById('billDateInput').placeholder = t('bill_date_placeholder');
@@ -2766,29 +2729,12 @@ function saveNote() {
   showToast(t('toast_note_saved'));
 }
 
-function updateClearNoteBtn() {
-  const hasContent = document.getElementById('titleInput').value.trim() ||
-                     document.getElementById('brainDump').value.trim();
-  const btn = document.getElementById('btnClearNote');
-  if (!btn) return;
-  btn.style.opacity = hasContent ? '1' : '0';
-  btn.style.pointerEvents = hasContent ? 'auto' : 'none';
-}
-
 function loadNote(i) {
   const n = state.notes[i];
   document.getElementById('titleInput').value = n.title;
   document.getElementById('brainDump').value = n.body;
   document.querySelector('.scroll-area').scrollTop = 0;
-  updateClearNoteBtn();
   showToast(t('toast_note_loaded'));
-}
-
-function clearNoteEditor() {
-  document.getElementById('titleInput').value = '';
-  document.getElementById('brainDump').value = '';
-  updateClearNoteBtn();
-  showToast('NOTE CLEARED');
 }
 
 // ── TODAY ACTIONS ──────────────────────────────────────────
@@ -3947,11 +3893,8 @@ function applyFont(font) {
   font = FONTS.includes(font) ? font : 'atkinson';
   appConfig.font = font;
   localStorage.setItem('dadapp_font', font);
-  if (font === 'atkinson') {
-    document.documentElement.removeAttribute('data-font');
-  } else {
-    document.documentElement.setAttribute('data-font', font);
-  }
+  // atkinson is the :root default — for others set data-font
+  document.documentElement.setAttribute('data-font', font === 'atkinson' ? '' : font);
 }
 
 function onSettingFont(font) {
@@ -4033,7 +3976,7 @@ window._ledgerDocs = [];
 window.renderBring = function() {
   const el = document.getElementById('bringList');
   if (!el) return;
-  const docs = window._bringDocs.filter(x => !x.deleted && x.text);
+  const docs = window._bringDocs.filter(x => !x.deleted);
   if (!docs.length) {
     el.innerHTML = `<div class="empty-state">${escHtml(t('bring_empty')).replace('\n','<br>')}</div>`;
     return;
@@ -4103,9 +4046,12 @@ async function bringDelete(id) {
   const fb = window._fb;
   if (!fb) return;
   try {
-    await fb.updateDoc(fb.doc(fb.db, 'bringlist', id), { deleted: true });
-    // onSnapshot will fire and re-render — no need to touch local cache manually
-  } catch(e) { showToast('Error: ' + e.message); }
+    // Soft delete: mark as deleted (Firestore free tier — avoid delete ops)
+    await fb.updateDoc(fb.doc(fb.db, 'bringlist', id), { deleted: true, packed: true });
+    // Filter out from local cache immediately
+    window._bringDocs = window._bringDocs.filter(x => x.id !== id || !x.deleted);
+    window.renderBring();
+  } catch(e) { console.error(e); }
 }
 window.bringDelete = bringDelete;
 
@@ -4167,86 +4113,39 @@ window.renderLedger = function() {
     </div>`;
   }).join('');
 
-  // Show/hide Clear Settled button
-  const clearBtn = document.getElementById('ledgerClearBtn');
-  if (clearBtn) {
-    const hasSettled = docs.some(x => x.settled);
-    clearBtn.style.display = hasSettled ? 'block' : 'none';
-  }
-
   // Re-apply i18n
   const descInp = document.getElementById('ledgerDesc');
   if (descInp) descInp.placeholder = t('ledger_desc_placeholder');
 };
 
 async function ledgerAdd() {
-  const descEl   = document.getElementById('ledgerDesc');
-  const amountEl = document.getElementById('ledgerAmount');
-  const paidByEl = document.getElementById('ledgerPaidBy');
-  const desc   = descEl?.value.trim();
-  const amount = parseFloat(amountEl?.value);
-  const paidBy = paidByEl?.value || 'me';
-
-  if (!desc)                        { showToast('ADD A DESCRIPTION'); return; }
-  if (isNaN(amount) || amount <= 0) { showToast('ADD AN AMOUNT'); return; }
-
+  const desc   = document.getElementById('ledgerDesc')?.value.trim();
+  const amount = parseFloat(document.getElementById('ledgerAmount')?.value);
+  const paidBy = document.getElementById('ledgerPaidBy')?.value;
+  if (!desc)        { showToast(t('ledger_desc_placeholder')); return; }
+  if (isNaN(amount) || amount <= 0) { showToast('$?'); return; }
   const fb = window._fb;
-  if (!fb) { showToast('NOT CONNECTED'); return; }
-
-  // Disable button while saving
-  const btn = document.querySelector('[onclick="ledgerAdd()"]');
-  if (btn) { btn.disabled = true; btn.textContent = '...'; }
-
+  if (!fb) { showToast('Firebase not ready'); return; }
   try {
     await fb.addDoc(fb.collection(fb.db, 'ledger'), {
-      desc,
-      amount,
-      paidBy,
+      desc, amount, paidBy,
       settled: false,
-      deleted: false,
       createdAt: fb.serverTimestamp()
     });
-    if (descEl)   descEl.value   = '';
-    if (amountEl) amountEl.value = '';
-    showToast('✓ SAVED');
-  } catch(e) {
-    console.error('ledgerAdd error:', e);
-    showToast('ERROR: ' + (e.message || e.code || 'unknown'));
-  } finally {
-    if (btn) { btn.disabled = false; btn.textContent = t('btn_ledger_add') || 'ADD'; }
-  }
+    document.getElementById('ledgerDesc').value   = '';
+    document.getElementById('ledgerAmount').value = '';
+  } catch(e) { showToast('Error: ' + e.message); }
 }
 window.ledgerAdd = ledgerAdd;
 
 async function ledgerSettle(id) {
   const fb = window._fb;
-  if (!fb) { showToast('NOT CONNECTED'); return; }
+  if (!fb) return;
   try {
     await fb.updateDoc(fb.doc(fb.db, 'ledger', id), { settled: true });
-    showToast('✓ SETTLED');
-  } catch(e) {
-    console.error('ledgerSettle error:', e);
-    showToast('ERROR: ' + (e.message || e.code || 'unknown'));
-  }
+  } catch(e) { console.error(e); }
 }
 window.ledgerSettle = ledgerSettle;
-
-async function ledgerClearSettled() {
-  const fb = window._fb;
-  if (!fb) { showToast('NOT CONNECTED'); return; }
-  const settled = window._ledgerDocs.filter(x => x.settled);
-  if (!settled.length) { showToast('NOTHING TO CLEAR'); return; }
-  try {
-    await Promise.all(settled.map(item =>
-      fb.updateDoc(fb.doc(fb.db, 'ledger', item.id), { deleted: true })
-    ));
-    showToast(`🗑️ ${settled.length} CLEARED`);
-  } catch(e) {
-    console.error('ledgerClear error:', e);
-    showToast('ERROR: ' + (e.message || e.code || 'unknown'));
-  }
-}
-window.ledgerClearSettled = ledgerClearSettled;
 
 // Expose t() to global scope so Firebase module script can access it
 window.t = t;
