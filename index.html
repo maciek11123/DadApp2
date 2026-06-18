@@ -723,11 +723,17 @@
   .note-archive-btn {
     background: none;
     border: none;
-    font-size: 15px;
+    font-size: 22px;
     cursor: pointer;
     color: var(--text-dim);
-    padding: 0 0 0 4px;
+    padding: 4px 6px;
     flex-shrink: 0;
+    line-height: 1;
+    min-width: 40px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .note-archive-btn:hover { color: var(--accent); }
   .note-restore-btn {
@@ -1427,6 +1433,7 @@
     text-align: center;
     margin-bottom: 14px;
   }
+  .ledger-summary:empty { display: none; }
   .ledger-item {
     background: var(--bg-card);
     border: var(--border);
@@ -1520,6 +1527,10 @@
           <button class="btn btn-blue" id="btnSaveNote" onclick="saveNote()"></button>
           <button class="btn btn-pink" id="btnRecAudio" onclick="openRecorder()"></button>
         </div>
+        <button id="btnClearNote" onclick="clearNoteEditor()"
+          style="display:none;width:100%;margin-top:8px;font-family:var(--font);font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:12px;border:2px dashed var(--black);background:transparent;color:var(--text-muted);cursor:pointer;">
+          ✕ CLEAR NOTE
+        </button>
       </div>
 
       <!-- Archive toggle -->
@@ -1735,7 +1746,13 @@
       </div>
       <div class="ledger-summary" id="ledgerSummary"></div>
       <div id="ledgerList"></div>
-      <div class="note-card" style="margin-top:16px;">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:6px;">
+        <button id="ledgerClearBtn" onclick="ledgerClearSettled()"
+          style="display:none;font-family:var(--font);font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:8px 14px;border:2px solid var(--black);background:var(--bg-card);color:var(--text-muted);cursor:pointer;box-shadow:2px 2px 0 var(--black);">
+          🗑️ CLEAR SETTLED
+        </button>
+      </div>
+      <div class="note-card" style="margin-top:8px;">
         <input class="title-input" id="ledgerDesc"   type="text"   maxlength="60" style="width:100%;margin-bottom:10px;" data-i18n-placeholder="ledger_desc_placeholder">
         <div style="display:flex;gap:10px;margin-bottom:10px;">
           <input class="title-input" id="ledgerAmount" type="number" placeholder="$0.00" step="0.01" style="flex:1;">
@@ -2709,6 +2726,8 @@ document.getElementById('noteToggle').addEventListener('click', function() {
 });
 
 function saveNote() {
+  const clearBtn = document.getElementById('btnClearNote');
+  if (clearBtn) clearBtn.style.display = 'none';
   const title = document.getElementById('titleInput').value.trim();
   const body = document.getElementById('brainDump').value.trim();
   if (!title && !body) { showToast(t('toast_nothing_save')); return; }
@@ -2734,7 +2753,17 @@ function loadNote(i) {
   document.getElementById('titleInput').value = n.title;
   document.getElementById('brainDump').value = n.body;
   document.querySelector('.scroll-area').scrollTop = 0;
+  const clearBtn = document.getElementById('btnClearNote');
+  if (clearBtn) clearBtn.style.display = 'block';
   showToast(t('toast_note_loaded'));
+}
+
+function clearNoteEditor() {
+  document.getElementById('titleInput').value = '';
+  document.getElementById('brainDump').value = '';
+  const clearBtn = document.getElementById('btnClearNote');
+  if (clearBtn) clearBtn.style.display = 'none';
+  showToast('NOTE CLEARED');
 }
 
 // ── TODAY ACTIONS ──────────────────────────────────────────
@@ -4113,6 +4142,13 @@ window.renderLedger = function() {
     </div>`;
   }).join('');
 
+  // Show/hide Clear Settled button
+  const clearBtn = document.getElementById('ledgerClearBtn');
+  if (clearBtn) {
+    const hasSettled = docs.some(x => x.settled);
+    clearBtn.style.display = hasSettled ? 'block' : 'none';
+  }
+
   // Re-apply i18n
   const descInp = document.getElementById('ledgerDesc');
   if (descInp) descInp.placeholder = t('ledger_desc_placeholder');
@@ -4146,6 +4182,22 @@ async function ledgerSettle(id) {
   } catch(e) { console.error(e); }
 }
 window.ledgerSettle = ledgerSettle;
+
+async function ledgerClearSettled() {
+  const fb = window._fb;
+  if (!fb) return;
+  const settled = window._ledgerDocs.filter(x => x.settled && !x.deleted);
+  if (!settled.length) { showToast('NOTHING TO CLEAR'); return; }
+  try {
+    await Promise.all(settled.map(item =>
+      fb.updateDoc(fb.doc(fb.db, 'ledger', item.id), { deleted: true })
+    ));
+    showToast(`🗑️ ${settled.length} CLEARED`);
+  } catch(e) {
+    showToast('ERROR: ' + e.message);
+  }
+}
+window.ledgerClearSettled = ledgerClearSettled;
 
 // Expose t() to global scope so Firebase module script can access it
 window.t = t;
