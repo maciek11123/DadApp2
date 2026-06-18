@@ -1940,10 +1940,10 @@ window.DAD_CONFIG = {
   // ── LEDGER listener ─────────────────────────────────────────
   const ledgerQ = query(collection(db, 'ledger'), orderBy('createdAt', 'desc'));
   onSnapshot(ledgerQ, (snap) => {
-    window._ledgerDocs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    window._ledgerDocs = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(x => !x.deleted);
     window.renderLedger && window.renderLedger();
     setFbStatus('ledger', 'live');
-  }, (err) => { console.error(err); setFbStatus('ledger', 'offline'); });
+  }, (err) => { console.error('Ledger snapshot error:', err); setFbStatus('ledger', 'offline'); });
 
   function setFbStatus(view, state) {
     const dot    = document.getElementById(view + 'FbDot');
@@ -4180,38 +4180,61 @@ window.renderLedger = function() {
 };
 
 async function ledgerAdd() {
-  const desc   = document.getElementById('ledgerDesc')?.value.trim();
-  const amount = parseFloat(document.getElementById('ledgerAmount')?.value);
-  const paidBy = document.getElementById('ledgerPaidBy')?.value;
-  if (!desc)        { showToast(t('ledger_desc_placeholder')); return; }
-  if (isNaN(amount) || amount <= 0) { showToast('$?'); return; }
+  const descEl   = document.getElementById('ledgerDesc');
+  const amountEl = document.getElementById('ledgerAmount');
+  const paidByEl = document.getElementById('ledgerPaidBy');
+  const desc   = descEl?.value.trim();
+  const amount = parseFloat(amountEl?.value);
+  const paidBy = paidByEl?.value || 'me';
+
+  if (!desc)                        { showToast('ADD A DESCRIPTION'); return; }
+  if (isNaN(amount) || amount <= 0) { showToast('ADD AN AMOUNT'); return; }
+
   const fb = window._fb;
-  if (!fb) { showToast('Firebase not ready'); return; }
+  if (!fb) { showToast('NOT CONNECTED'); return; }
+
+  // Disable button while saving
+  const btn = document.querySelector('[onclick="ledgerAdd()"]');
+  if (btn) { btn.disabled = true; btn.textContent = '...'; }
+
   try {
     await fb.addDoc(fb.collection(fb.db, 'ledger'), {
-      desc, amount, paidBy,
+      desc,
+      amount,
+      paidBy,
       settled: false,
+      deleted: false,
       createdAt: fb.serverTimestamp()
     });
-    document.getElementById('ledgerDesc').value   = '';
-    document.getElementById('ledgerAmount').value = '';
-  } catch(e) { showToast('Error: ' + e.message); }
+    if (descEl)   descEl.value   = '';
+    if (amountEl) amountEl.value = '';
+    showToast('✓ SAVED');
+  } catch(e) {
+    console.error('ledgerAdd error:', e);
+    showToast('ERROR: ' + (e.message || e.code || 'unknown'));
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = t('btn_ledger_add') || 'ADD'; }
+  }
 }
 window.ledgerAdd = ledgerAdd;
 
 async function ledgerSettle(id) {
   const fb = window._fb;
-  if (!fb) return;
+  if (!fb) { showToast('NOT CONNECTED'); return; }
   try {
     await fb.updateDoc(fb.doc(fb.db, 'ledger', id), { settled: true });
-  } catch(e) { console.error(e); }
+    showToast('✓ SETTLED');
+  } catch(e) {
+    console.error('ledgerSettle error:', e);
+    showToast('ERROR: ' + (e.message || e.code || 'unknown'));
+  }
 }
 window.ledgerSettle = ledgerSettle;
 
 async function ledgerClearSettled() {
   const fb = window._fb;
-  if (!fb) return;
-  const settled = window._ledgerDocs.filter(x => x.settled && !x.deleted);
+  if (!fb) { showToast('NOT CONNECTED'); return; }
+  const settled = window._ledgerDocs.filter(x => x.settled);
   if (!settled.length) { showToast('NOTHING TO CLEAR'); return; }
   try {
     await Promise.all(settled.map(item =>
@@ -4219,7 +4242,8 @@ async function ledgerClearSettled() {
     ));
     showToast(`🗑️ ${settled.length} CLEARED`);
   } catch(e) {
-    showToast('ERROR: ' + e.message);
+    console.error('ledgerClear error:', e);
+    showToast('ERROR: ' + (e.message || e.code || 'unknown'));
   }
 }
 window.ledgerClearSettled = ledgerClearSettled;
