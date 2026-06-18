@@ -1755,7 +1755,7 @@ window.DAD_CONFIG = {
   // ── LEDGER listener ─────────────────────────────────────────
   const ledgerQ = query(collection(db, 'ledger'), orderBy('createdAt', 'desc'));
   onSnapshot(ledgerQ, (snap) => {
-    window._ledgerDocs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    window._ledgerDocs = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(x => !x.deleted);
     window.renderLedger && window.renderLedger();
     setFbStatus('ledger', 'live');
   }, (err) => { console.error(err); setFbStatus('ledger', 'offline'); });
@@ -3915,23 +3915,20 @@ window.renderLedger = function() {
   const summaryEl = document.getElementById('ledgerSummary');
   if (!el) return;
 
-  const docs = window._ledgerDocs.filter(x => !x.deleted);
-  const unsettled = docs.filter(x => !x.settled);
+  const docs     = window._ledgerDocs.filter(x => !x.deleted);
+  const active   = docs.filter(x => !x.settled);
+  const archived = docs.filter(x =>  x.settled);
 
-  // Calculate balance: positive = he owes me, negative = I owe him
-  let balance = 0;
-  unsettled.forEach(item => {
-    if (item.paidBy === 'me')  balance += item.amount;
-    if (item.paidBy === 'him') balance -= item.amount;
-  });
+  // Balance — Da always paid, Maciek always owes
+  const balance = active.reduce((s, x) => s + (x.amount || 0), 0);
 
-  // Summary card — Da always paid, Maciek always owes
   if (summaryEl) {
-    const absAmt = Math.abs(balance).toFixed(2);
-    if (Math.abs(balance) > 0.01) {
-      summaryEl.textContent = `MACIEK OWES DA $${absAmt}`;
+    if (balance > 0.01) {
+      summaryEl.textContent = `MACIEK OWES DA $${balance.toFixed(2)}`;
+      summaryEl.style.background = 'var(--black)';
     } else {
-      summaryEl.textContent = t('ledger_settled');
+      summaryEl.textContent = 'ALL SETTLED ✓';
+      summaryEl.style.background = 'var(--green,#00C853)';
     }
   }
 
@@ -3940,24 +3937,41 @@ window.renderLedger = function() {
     return;
   }
 
-  el.innerHTML = docs.map(item => {
-    const date = item.createdAt?.toDate
+  function itemHTML(item, isArchive) {
+    const added = item.createdAt?.toDate
       ? item.createdAt.toDate().toLocaleDateString('en-CA', { month:'short', day:'numeric' }).toUpperCase()
       : '';
-    const settledCls = item.settled ? ' settled' : '';
-    const settledBadge = item.settled ? `<span style="font-size:9px;color:var(--green);font-weight:700;letter-spacing:0.08em;">✓ SETTLED</span>` : '';
-    const settleBtn = !item.settled
-      ? `<button class="ledger-settle-btn" onclick="ledgerSettle('${item.id}')">${t('ledger_settle')}</button>`
+    const settledDate = item.settledAt
+      ? new Date(item.settledAt).toLocaleDateString('en-CA', { month:'short', day:'numeric' }).toUpperCase()
       : '';
-    return `<div class="ledger-item${settledCls}">
+    const meta = isArchive
+      ? `Da paid · ${added}  ·  ✓ SETTLED ${settledDate}`
+      : `Da paid · ${added}`;
+    const actionBtn = isArchive
+      ? `<button class="ledger-settle-btn" style="background:#e53935;color:#fff;border-color:#e53935;" onclick="ledgerDelete('${item.id}')">🗑️</button>`
+      : `<button class="ledger-settle-btn" onclick="ledgerSettle('${item.id}')">${t('ledger_settle')}</button>`;
+    return `<div class="ledger-item${isArchive ? ' settled' : ''}">
       <div class="ledger-item-info">
         <span class="ledger-item-desc">${escHtml(item.desc)}</span>
-        <span class="ledger-item-meta">Da paid · ${date} ${settledBadge}</span>
+        <span class="ledger-item-meta">${meta}</span>
       </div>
       <div class="ledger-item-amount">$${Number(item.amount).toFixed(2)}</div>
-      ${settleBtn}
+      ${actionBtn}
     </div>`;
-  }).join('');
+  }
+
+  let html = active.map(i => itemHTML(i, false)).join('');
+
+  if (archived.length) {
+    html += `<div class="done-divider" style="margin:18px 0 12px;">
+      <div class="done-divider-line"></div>
+      <div class="done-divider-label">SETTLED ARCHIVE (${archived.length})</div>
+      <div class="done-divider-line"></div>
+    </div>`;
+    html += archived.map(i => itemHTML(i, true)).join('');
+  }
+
+  el.innerHTML = html;
 
   // Re-apply i18n
   const descInp = document.getElementById('ledgerDesc');
@@ -3991,12 +4005,26 @@ window.ledgerAdd = ledgerAdd;
 
 async function ledgerSettle(id) {
   const fb = window._fb;
-  if (!fb) return;
+  if (!fb) { showToast('NOT CONNECTED'); return; }
   try {
-    await fb.updateDoc(fb.doc(fb.db, 'ledger', id), { settled: true });
-  } catch(e) { console.error(e); }
+    await fb.updateDoc(fb.doc(fb.db, 'ledger', id), {
+      settled: true,
+      settledAt: new Date().toISOString()
+    });
+    showToast('✓ SETTLED');
+  } catch(e) { showToast('ERROR: ' + e.message); }
 }
 window.ledgerSettle = ledgerSettle;
+
+async function ledgerDelete(id) {
+  const fb = window._fb;
+  if (!fb) { showToast('NOT CONNECTED'); return; }
+  try {
+    await fb.updateDoc(fb.doc(fb.db, 'ledger', id), { deleted: true });
+    showToast('🗑️ DELETED');
+  } catch(e) { showToast('ERROR: ' + e.message); }
+}
+window.ledgerDelete = ledgerDelete;
 
 // Expose t() to global scope so Firebase module script can access it
 window.t = t;
