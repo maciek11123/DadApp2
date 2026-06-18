@@ -1528,7 +1528,7 @@
           <button class="btn btn-pink" id="btnRecAudio" onclick="openRecorder()"></button>
         </div>
         <button id="btnClearNote" onclick="clearNoteEditor()"
-          style="display:none;width:100%;margin-top:8px;font-family:var(--font);font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:12px;border:2px dashed var(--black);background:transparent;color:var(--text-muted);cursor:pointer;">
+          style="width:100%;margin-top:8px;font-family:var(--font);font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:12px;border:2px dashed var(--black);background:transparent;color:var(--text-muted);cursor:pointer;opacity:0;pointer-events:none;transition:opacity 0.15s;">
           ✕ CLEAR NOTE
         </button>
       </div>
@@ -2427,6 +2427,9 @@ function applyI18n() {
   // Inputs
   document.getElementById('titleInput').placeholder = t('note_title_placeholder');
   document.getElementById('brainDump').placeholder = t('note_body_placeholder');
+  // Show/hide Clear Note button reactively as user types
+  document.getElementById('titleInput').addEventListener('input', updateClearNoteBtn);
+  document.getElementById('brainDump').addEventListener('input', updateClearNoteBtn);
   document.getElementById('todayInput').placeholder = t('today_input_placeholder');
   document.getElementById('billNameInput').placeholder = t('bill_name_placeholder');
   document.getElementById('billDateInput').placeholder = t('bill_date_placeholder');
@@ -2726,8 +2729,6 @@ document.getElementById('noteToggle').addEventListener('click', function() {
 });
 
 function saveNote() {
-  const clearBtn = document.getElementById('btnClearNote');
-  if (clearBtn) clearBtn.style.display = 'none';
   const title = document.getElementById('titleInput').value.trim();
   const body = document.getElementById('brainDump').value.trim();
   if (!title && !body) { showToast(t('toast_nothing_save')); return; }
@@ -2748,21 +2749,28 @@ function saveNote() {
   showToast(t('toast_note_saved'));
 }
 
+function updateClearNoteBtn() {
+  const hasContent = document.getElementById('titleInput').value.trim() ||
+                     document.getElementById('brainDump').value.trim();
+  const btn = document.getElementById('btnClearNote');
+  if (!btn) return;
+  btn.style.opacity = hasContent ? '1' : '0';
+  btn.style.pointerEvents = hasContent ? 'auto' : 'none';
+}
+
 function loadNote(i) {
   const n = state.notes[i];
   document.getElementById('titleInput').value = n.title;
   document.getElementById('brainDump').value = n.body;
   document.querySelector('.scroll-area').scrollTop = 0;
-  const clearBtn = document.getElementById('btnClearNote');
-  if (clearBtn) clearBtn.style.display = 'block';
+  updateClearNoteBtn();
   showToast(t('toast_note_loaded'));
 }
 
 function clearNoteEditor() {
   document.getElementById('titleInput').value = '';
   document.getElementById('brainDump').value = '';
-  const clearBtn = document.getElementById('btnClearNote');
-  if (clearBtn) clearBtn.style.display = 'none';
+  updateClearNoteBtn();
   showToast('NOTE CLEARED');
 }
 
